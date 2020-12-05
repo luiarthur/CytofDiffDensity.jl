@@ -6,5 +6,5 @@ using StatsFuns
 import Random
 
 @testset "MCMC" begin
-  include("example.jl")
+  include("CDDgamma.jl")
 end
