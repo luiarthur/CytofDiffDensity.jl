@@ -111,11 +111,11 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[MCMC]]
 deps = ["BangBang", "Distributions", "ProgressBars", "Random", "StatsFuns"]
-git-tree-sha1 = "86ac2703091bd0ec0d92d2745d2143e4cab38636"
+git-tree-sha1 = "0f4349fa299a9d971d879126ff7bc47a45f8a3d8"
 repo-rev = "main"
 repo-url = "https://github.com/luiarthur/MCMC.jl"
 uuid = "c4263776-7399-408b-84de-0a68bf597892"
-version = "0.3.0"
+version = "0.4.0"
 
 [[MacroTools]]
 deps = ["Markdown", "Random"]
