@@ -1,0 +1,19 @@
+name = "CytofDiffDensity"
+uuid = "1f610734-2797-45cd-b0b6-8ba644689e96"
+authors = ["Arthur Lui <luiarthur@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+MCMC = "c4263776-7399-408b-84de-0a68bf597892"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+StatsFuns = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
