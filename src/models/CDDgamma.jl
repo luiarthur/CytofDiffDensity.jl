@@ -14,7 +14,7 @@ function CDDg0(NC::Int, NT::Int, QC::Int, QT::Int, nsamps::Int; a::Real=1, b::Re
 
   return (gammaC_samples=gamma_samples,
           gammaT_samples=gamma_samples,
-          distC=dist)
+          distC=dist, distT=dist)
 end
 
 """
@@ -32,6 +32,14 @@ function CDDg1(NC::Int, NT::Int, QC::Int, QT::Int, nsamps::Int; a::Real=1, b::Re
 
   return (gammaC_samples=gammaC_samples,
           gammaT_samples=gammaT_samples,
-          distC=distC,
-          distT=distT)
+          distC=distC, distT=distT)
+end
+
+
+function CDDg(NC, NT, QC, QT, beta, nsamps; a=1, b=1)
+  if Bool(beta)
+    return CDDg1(NC, NT, QC, QT, nsamps, a=a, b=b)
+  else
+    return CDDg0(NC, NT, QC, QT, nsamps, a=a, b=b)
+  end
 end
