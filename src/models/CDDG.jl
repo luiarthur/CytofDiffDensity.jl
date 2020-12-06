@@ -56,6 +56,6 @@ function make_sampler(m::CDDG, init)
                Conditional(:mu, update_mu),
                Conditional(:tau, update_tau),
                Conditional(:omega, update_omega),
-               RWM(:nu, logprob_nu, mvarmw((init.nu)), bijector=Bijectors.Log{1}()),
+               RWM(:nu, logprob_nu, mvarwm(init.nu), bijector=Bijectors.Log{1}()),
                Conditional(:psi, update_psi))
 end

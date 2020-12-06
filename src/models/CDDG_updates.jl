@@ -18,15 +18,15 @@ function update_etaT(m::CDDG, s::T) where T
     foreach(lam -> anew[lam] +=1, s.lambdaT)
     return rand(Dirichlet(anew))
   else
-    return m.etaC
+    return s.etaC
   end
 end
 
-function update_lambda(m::CDDG, s::T, sample_idx::Symbol) where T
-  y = grab(m, :y, sample_idx)
-  v = grab(s, :v, sample_idx)
-  zeta = grab(s, :zeta, sample_idx)
-  eta = grab(s, :eta, sample_idx)
+function update_lambda(m::CDDG, s::T, i::Symbol) where T
+  y = grab(m, :y, i)
+  v = grab(s, :v, i)
+  zeta = grab(s, :zeta, i)
+  eta = grab(s, :eta, i)
   logeta = log.(eta)
 
   lambda = [let

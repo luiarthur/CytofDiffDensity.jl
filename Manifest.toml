@@ -128,11 +128,11 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[MCMC]]
 deps = ["BangBang", "Bijectors", "Distributions", "LinearAlgebra", "ProgressBars", "Random", "StatsFuns"]
-git-tree-sha1 = "6985048e54d482826cc66127436e0adcccca5698"
+git-tree-sha1 = "6ec26d77018a983ccb69e5122bab8b0d25970379"
 repo-rev = "main"
 repo-url = "https://github.com/luiarthur/MCMC.jl"
 uuid = "c4263776-7399-408b-84de-0a68bf597892"
-version = "0.7.3"
+version = "0.7.4"
 
 [[MacroTools]]
 deps = ["Markdown", "Random"]

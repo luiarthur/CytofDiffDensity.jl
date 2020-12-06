@@ -3,13 +3,13 @@
   yC = rand(SkewT(1, .6, 9, -5), 10000)
   yT = rand(SkewT(3, 1, 9, -10), 10000)
 
-  for beta in (0, 1)
-    model = CDDG(yC, yT, 5, 1)
+  for beta in (nothing, 0, 1)
+    model = beta === nothing ? CDDG(yC, yT, 5, 1) : CDDG(yC, yT, 5, beta)
     init = MCMC.make_init_state(model)
     spl = make_sampler(model, init)
 
-    nburn = 10
-    nsamps = 20
+    nburn = beta === nothing ? 2 : 10
+    nsamps = beta === nothing ? 2 : 20
     thin = 2
     function callback(chain, state, sample, i, metrics, iterator)
       if i == 1
