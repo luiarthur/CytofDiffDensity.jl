@@ -1,9 +1,28 @@
 @testset "CDDG" begin
+  # NOTE: With Ni of 10000, should have around 10 it/s without loglike computation.
   yC = rand(SkewT(1, .6, 9, -5), 10000)
   yT = rand(SkewT(3, 1, 9, -10), 10000)
-  model = CDDG(yC, yT, 5, 1)
-  init = MCMC.make_init_state(model)
-  spl = make_sampler(model, init)
-  chain, metrics = mcmc(spl, 10, init=init, discard=50, thin=2)
+
+  for beta in (0, 1)
+    model = CDDG(yC, yT, 5, 1)
+    init = MCMC.make_init_state(model)
+    spl = make_sampler(model, init)
+
+    nburn = 10
+    nsamps = 20
+    thin = 2
+    function callback(chain, state, sample, i, metrics, iterator)
+      if i == 1
+        metrics[:loglike_G] = Float64[]
+      elseif i > nburn && mod(i, thin) == 0
+        ll = loglike_G(model, state)
+        append!(metrics[:loglike_G], ll)
+        MCMC.ProgressBars.set_postfix(iterator, loglike=round(ll, digits=3))
+      end
+    end
+    chain, metrics = mcmc(spl, nsamps, init=init, nburn=nburn, thin=thin, callback=callback)
+    @test length(metrics[:loglike_G]) == nsamps
+    @assert length(unique(chain)) == nsamps
+  end
   @test true
 end

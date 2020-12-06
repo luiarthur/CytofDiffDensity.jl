@@ -1,13 +1,27 @@
+struct CDDgamma{A<:Real, B<:Real}
+  NC::Int
+  NT::Int
+  QC::Int
+  QT::Int
+  beta::Bool
+  a::A
+  b::B
+end
+
+function CDDgamma(; NC, NT, QC, QT, beta, a=1.0, b=1.0)
+  return CDDgamma(NC, NT, QC, QT, Bool(beta), a, b)
+end
+
 """
 Model0: Proportion of zeros are the same.
 Return posterior samples of gammaC and gammaT.
 """
-function CDDg0(NC::Int, NT::Int, QC::Int, QT::Int, nsamps::Int; a::Real=1, b::Real=1)
-  Nsum = NC + NT
-  Qsum = QC + QT
+function infer_CDDgamma0(m::CDDgamma, nsamps::Int)
+  Nsum = m.NC + m.NT
+  Qsum = m.QC + m.QT
   
   # Posterior distribution.
-  dist = Beta(a + Qsum, b + Nsum - Qsum)
+  dist = Beta(m.a + Qsum, m.b + Nsum - Qsum)
 
   # Posterior samples of gammaC (and gammaT)
   gamma_samples = rand(dist, nsamps)
@@ -21,10 +35,10 @@ end
 Model1: Proportion of zeros are different.
 Return posterior samples of gammaC and gammaT.
 """
-function CDDg1(NC::Int, NT::Int, QC::Int, QT::Int, nsamps::Int; a::Real=1, b::Real=1)
+function infer_CDDgamma1(m::CDDgamma, nsamps::Int)
   # Posterior distributions.
-  distC = Beta(a + QC, b + NC - QC)
-  distT = Beta(a + QT, b + NT - QT)
+  distC = Beta(m.a + m.QC, m.b + m.NC - m.QC)
+  distT = Beta(m.a + m.QT, m.b + m.NT - m.QT)
 
   # Posterior samples of gammaC and gammaT.
   gammaC_samples = rand(distC, nsamps)
@@ -35,11 +49,10 @@ function CDDg1(NC::Int, NT::Int, QC::Int, QT::Int, nsamps::Int; a::Real=1, b::Re
           distC=distC, distT=distT)
 end
 
-
-function CDDg(NC, NT, QC, QT, beta, nsamps; a=1, b=1)
-  if Bool(beta)
-    return CDDg1(NC, NT, QC, QT, nsamps, a=a, b=b)
+function infer(m::CDDgamma, nsamps::Int)
+  if m.beta
+    return infer_CDDgamma0(m::CDDgamma, nsamps)
   else
-    return CDDg0(NC, NT, QC, QT, nsamps, a=a, b=b)
+    return infer_CDDgamma1(m::CDDgamma, nsamps)
   end
 end

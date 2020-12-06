@@ -6,11 +6,12 @@ using StatsFuns
 using Random
 using MCMC: Bijectors
 
-export CDDG, CDDg0, CDDg1, CDDg
+export CDDG, CDDgamma, infer
 
 export SkewT, skewtlogpdf, skewtpdf, randskewt
 export AltSkewT, skewfromaltskewt, scalefromaltskewt, fromaltskewt, toaltscale, toaltskew
 export make_sampler
+export loglike_G, loglike_gamma
 
 include("skewt.jl")
 include("models/CDDG.jl")
