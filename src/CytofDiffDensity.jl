@@ -16,5 +16,6 @@ include("skewt.jl")
 include("models/CDDG.jl")
 include("models/CDDG_updates.jl")
 include("models/CDDgamma.jl")
+include("metrics.jl")
 
 end # module

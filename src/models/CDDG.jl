@@ -25,9 +25,9 @@ function MCMC.make_init_state(m::CDDG)
   etaT = rand(m.eta)
   lambdaC = rand(Categorical(etaC), NC)
   lambdaT = rand(Categorical(etaT), NT)
-  tau = rand(m.tau, m.K)  # FIXME: need to update this in the paper.
+  tau = rand(m.tau)
   mu = rand(m.mu, m.K)
-  omega = rand.(InverseGamma.(m.a_omega, tau))
+  omega = rand(InverseGamma(m.a_omega, tau), m.K)
   nu = rand(m.nu, m.K)
   psi = rand(m.psi, m.K)
   vC = rand.(Gamma.(nu[lambdaC] / 2, 2 ./ nu[lambdaC]))
@@ -35,9 +35,12 @@ function MCMC.make_init_state(m::CDDG)
   zetaC = rand.(truncated.(Normal.(0, 1 ./ sqrt.(vC)), 0, Inf))
   zetaT = rand.(truncated.(Normal.(0, 1 ./ sqrt.(vT)), 0, Inf))
 
+  sigma = @.scalefromaltskewt(sqrt(omega), psi)
+  phi = @.skewfromaltskewt(sqrt(omega), psi)
+
   return (etaC=etaC, etaT=etaT, lambdaC=lambdaC, lambdaT=lambdaT, tau=tau,
           mu=mu, omega=omega, nu=nu, psi=psi, vC=vC, vT=vT, zetaC=zetaC,
-          zetaT=zetaT)
+          zetaT=zetaT, sigma=sigma, phi=phi)
 end
 
 function make_sampler(m::CDDG, init)
@@ -46,8 +49,8 @@ function make_sampler(m::CDDG, init)
                Conditional(:etaT, update_etaT),
                Conditional(:lambdaC, update_lambdaC),
                Conditional(:lambdaT, update_lambdaT),
-               Conditional(:vC, update_lambdaC),
-               Conditional(:vT, update_lambdaT),
+               Conditional(:vC, update_vC),
+               Conditional(:vT, update_vT),
                Conditional(:zetaC, update_zetaC),
                Conditional(:zetaT, update_zetaT),
                Conditional(:mu, update_mu),
