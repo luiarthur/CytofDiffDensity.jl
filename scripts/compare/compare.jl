@@ -3,7 +3,7 @@ include("imports.jl")
 using Distributed
 
 rmprocs(workers())
-addprocs(2)  # 20
+addprocs(20)  # 20
 println("Compile on workers ...")
 @everywhere include("imports.jl")
 
