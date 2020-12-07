@@ -1,2 +1,0 @@
-awsbucket: s3://cytof-diff-dens
-resultsdir: $(SCRATCH_DIR)/cytof-diff-dens
