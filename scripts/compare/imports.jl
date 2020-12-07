@@ -122,4 +122,29 @@ function postprocess(sim)
   plot!(size=plotsize)
   savefig(joinpath(imgdir, "post-density.pdf"))
   closeall()
+
+  function plot_uniparam(sym)
+    param = getindex.(r.chain, sym)
+    p1 = plot(param, label=nothing)
+    p2 = histogram(param, label=nothing, normalize=true)
+    plot(p1, p2, layout=(1, 2), size=(1000, 500))
+    savefig(joinpath(imgdir, "$(sym).pdf"))
+    closeall()
+  end
+
+  function plot_mvparam(sym)
+    param = hcat(getindex.(r.chain, sym)...)'
+    size(param, 2) == 1 && (param = vec(param))
+    p1 = plot(param, label=nothing)
+    p2 = boxplot(param, label=nothing)
+    plot(p1, p2, layout=(1, 2), size=(1000, 500))
+    savefig(joinpath(imgdir, "$(sym).pdf"))
+    closeall()
+  end
+
+  # Plot trace plots and boxplots for multivariate parameters.
+  foreach(plot_mvparam, [:mu, :sigma, :nu, :phi, :eta])
+
+  # Plot trace plots and boxplots for univariate parameters.
+  foreach(plot_uniparam, [:tau])
 end
