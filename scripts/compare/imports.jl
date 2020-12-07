@@ -88,7 +88,7 @@ end
 """
 Plot posterior density and simtruth.
 """
-function plot_simtruth_with_post(true_dist, chain, ygrid; alpha=0.5)
+function plot_simtruth_with_post(true_dist, chain, ygrid; alpha=0.3)
   plot(ygrid, pdf.(true_dist, ygrid), label=nothing, color=:black)
   ylabel!("density")
 
