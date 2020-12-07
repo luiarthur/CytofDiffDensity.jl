@@ -1,3 +1,16 @@
+function loglike(m::MixSkewT, s::T) where T
+  loc = s.mu
+  scale = s.sigma
+  skew = s.phi
+  df = s.nu
+
+  kernel = skewtlogpdf.(loc', scale', df', skew', m.y)
+  ll = sum(logsumexp(kernel .+ log.(s.eta)', dims=2))
+
+  return ll
+end
+
+
 function loglike_G(m::CDDG, s::T) where T
   loc = s.mu
   scale = s.sigma

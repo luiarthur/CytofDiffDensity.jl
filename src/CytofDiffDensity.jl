@@ -12,8 +12,9 @@ export MixSkewT
 export SkewT, skewtlogpdf, skewtpdf, randskewt
 export AltSkewT, skewfromaltskewt, scalefromaltskewt, fromaltskewt, toaltscale, toaltskew
 export make_sampler
-export loglike_G, loglike_gamma
+export loglike_G, loglike_gamma, loglike
 
+include("util.jl")
 include("skewt.jl")
 include("models/CDDG.jl")
 include("models/CDDG_updates.jl")

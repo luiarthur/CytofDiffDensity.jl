@@ -33,7 +33,7 @@ function update_lambda(m::CDDG, s::T, i::Symbol) where T
               loc = s.mu + s.psi * zeta[n]
               scale = sqrt.(s.omega) / sqrt(v[n])
               logmix = normlogpdf.(loc, scale, y[n]) + logeta
-              all(s.nu .< Inf) && (logmix += gammalogpdf.(s.nu/2, 2 ./ s.nu, v[n]))
+              all(s.nu .< 10000) && (logmix += gammalogpdf.(s.nu/2, 2 ./ s.nu, v[n]))
               MCMC.wsample_logprob(logmix)
             end for n in eachindex(y)]
 

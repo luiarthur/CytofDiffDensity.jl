@@ -11,4 +11,7 @@ resultsdir_datarun = joinpath(resultsdir, "datarun")
 awsbucket_simstudy = joinpath(awsbucket, "simstudy")
 resultsdir_simstudy = joinpath(resultsdir, "simstudy")
 
+awsbucket_compare = joinpath(awsbucket, "compare")
+resultsdir_compare = joinpath(resultsdir, "compare")
+
 end  # module

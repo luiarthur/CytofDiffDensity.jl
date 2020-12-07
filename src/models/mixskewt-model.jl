@@ -36,14 +36,45 @@ end
 
 function make_sampler(m::MixSkewT, init)
   return Gibbs(m,
-               Conditional(:eta, update_eta),
                Conditional(:lambda, update_lambda),
                Conditional(:v, update_v),
                Conditional(:zeta, update_zeta),
+               Conditional(:eta, update_eta),
                Conditional(:mu, update_mu),
                Conditional(:tau, update_tau),
                Conditional(:omega, update_omega),
-               RWM(:nu, logprob_nu, mvarwm(init.nu), bijector=Bijectors.Log{1}()),
                Conditional(:psi, update_psi),
+               RWM(:nu, logprob_nu, mvarwm(init.nu), bijector=Bijectors.Log{1}()),
+               Conditional((:sigma, :phi), update_sigma_phi))
+end
+
+
+function make_sampler(m::MixSkewT, init, skew::Bool, tdist::Bool)
+  if tdist
+    cond_nu = RWM(:nu, logprob_nu, mvarwm(init.nu), bijector=Bijectors.Log{1}())
+    _update_v = update_v
+  else
+    cond_nu = Conditional(:nu, (m, s) -> fill(20000.0, m.K))
+    _update_v = (m, s) -> one.(m.y)
+  end
+
+  if skew
+    _update_zeta = update_zeta
+    _update_psi = update_psi
+  else
+    _update_zeta = (m, s) -> zero.(m.y)
+    _update_psi = (m, s) -> zeros(m.K)
+  end
+
+  return Gibbs(m,
+               Conditional(:lambda, update_lambda),
+               Conditional(:v, _update_v),
+               Conditional(:zeta, _update_zeta),
+               Conditional(:eta, update_eta),
+               Conditional(:mu, update_mu),
+               Conditional(:tau, update_tau),
+               Conditional(:omega, update_omega),
+               Conditional(:psi, _update_psi),
+               cond_nu,
                Conditional((:sigma, :phi), update_sigma_phi))
 end

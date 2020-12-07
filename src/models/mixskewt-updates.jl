@@ -11,7 +11,7 @@ function update_lambda(m::MixSkewT, s::S) where S
               loc = s.mu + s.psi * s.zeta[n]
               scale = sqrt.(s.omega) / sqrt(s.v[n])
               logmix = normlogpdf.(loc, scale, m.y[n]) + logeta
-              all(s.nu .< Inf) && (logmix += gammalogpdf.(s.nu/2, 2 ./ s.nu, s.v[n]))
+              all(s.nu .< 10000) && (logmix += gammalogpdf.(s.nu/2, 2 ./ s.nu, s.v[n]))
               MCMC.wsample_logprob(logmix)
             end for n in eachindex(m.y)]
 
