@@ -38,8 +38,8 @@ function run(sim)  # redirect output?
   init = MCMC.make_init_state(model)
   spl = make_sampler(model, init, sim[:skew], sim[:tdist])
 
-  nburn = 300 # 3000
-  nsamps = 200 # 2000
+  nburn = 3000
+  nsamps = 2000
   thin = 2
 
   callback = make_callback(model, nburn=nburn, nsamps=nsamps, thin=thin)
