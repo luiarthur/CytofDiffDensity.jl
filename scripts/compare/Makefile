@@ -5,11 +5,11 @@ resultsdir = `julia -e 'include("../info.jl"); println(Info.resultsdir_compare)'
 simname = "v1"
 
 getresults:
-	aws s3 sync $(resultsdir)/$(simname) $(awsbucket)/$(simname) --exclude '*.bson'
+	aws s3 sync $(awsbucket)/$(simname) $(resultsdir)/$(simname) --exclude '*.bson'
 
 getallresults:
-	aws s3 sync $(resultsdir)/$(simname) $(awsbucket)/$(simname)
+	aws s3 sync $(awsbucket)/$(simname) $(resultsdir)/$(simname)
 
 sendresults:
-	aws s3 sync $(awsbucket)/$(simname) $(resultsdir)/$(simname)
+	aws s3 sync $(resultsdir)/$(simname) $(awsbucket)/$(simname)
 
