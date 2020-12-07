@@ -36,7 +36,7 @@
         # println(s)
         samps = getindex.(chain, s)
         if s != :nu
-          @test length(unique(samps)) > nsamps * 0.8
+          @test length(unique(samps)) > nsamps * 0.5
         else
           @test length(unique(samps)) > 2
         end
