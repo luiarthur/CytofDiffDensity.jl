@@ -13,7 +13,7 @@
 
     nburn = beta === nothing ? 2 : 50
     nsamps = beta === nothing ? 2 : 100
-    thin = 3
+    thin = 4
     function callback(chain, state, sample, i, metrics, iterator)
       if i == 1
         metrics[:loglike_G] = Float64[]
@@ -36,7 +36,7 @@
         # println(s)
         samps = getindex.(chain, s)
         if s != :nu
-          @test length(unique(samps)) > nsamps * 0.5
+          @test length(unique(samps)) > nsamps * 0.6
         else
           @test length(unique(samps)) > 2
         end
