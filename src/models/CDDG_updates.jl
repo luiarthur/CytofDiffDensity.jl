@@ -112,17 +112,16 @@ function update_tau(m::CDDG, s::T) where T
   return rand(Gamma(new_shape, 1 / new_rate))
 end
 
-function update_sigma!(s::T) where T
-  @. s.sigma = scalefromaltskewt(sqrt(s.omega), s.psi)
+function update_sigma(m::CDDG, s::T) where T
+  return @.scalefromaltskewt(sqrt(s.omega), s.psi)
 end
 
-function update_phi!(s::T) where T
-  @. s.phi = skewfromaltskewt(sqrt(s.omega), s.psi)
+function update_phi(m::CDDG, s::T) where T
+  return @.skewfromaltskewt(sqrt(s.omega), s.psi)
 end
 
-function update_sigma_phi!(s::T) where T
-  update_sigma!(s)
-  update_phi!(s)
+function update_sigma_phi(m::CDDG, s::T) where T
+  return (sigma=update_sigma(m, s), phi=update_phi(m, s))
 end
 
 function update_omega(m::CDDG, s::T) where T
@@ -145,11 +144,7 @@ function update_omega(m::CDDG, s::T) where T
   anew = a .+ akernel / 2
   bnew = b .+ bkernel / 2
 
-  @. s.omega = rand(InverseGamma(anew, bnew))
-
-  update_sigma_phi!(s)
-
-  return s.omega
+  return @.rand(InverseGamma(anew, bnew))
 end
 
 function logprob_nu(m::CDDG, s::T, nu::AbstractVector{<:Real}) where T
@@ -174,23 +169,19 @@ function update_psi(m::CDDG, s::T) where T
 
   # Update kernels
   for i in (:C, :T)
-    yfinite = grab(m, :y, i)
+    y = grab(m, :y, i)
     lam = grab(s, :lambda, i)
     zeta = grab(s, :zeta, i)
     v = grab(s, :v, i)
     for n in eachindex(v)
       k = lam[n]
       vkernel[k] += zeta[n]^2 * v[n] / s.omega[k]
-      mkernel[k] += zeta[n] * (yfinite[n] - s.mu[k]) * v[n] / s.omega[k]
+      mkernel[k] += zeta[n] * (y[n] - s.mu[k]) * v[n] / s.omega[k]
     end
   end
 
   vnew = 1 ./ (s_psi^-2 .+ vkernel)
   mnew = vnew .* (m_psi/s_psi^2 .+ mkernel)
 
-  s.psi .= randn(m.K) .* sqrt.(vnew) + mnew
-
-  update_sigma_phi!(s)
-
-  return s.psi
+  return randn(m.K) .* sqrt.(vnew) + mnew
 end
