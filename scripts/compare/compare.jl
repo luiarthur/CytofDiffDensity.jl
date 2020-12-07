@@ -14,9 +14,9 @@ sims = dict_list(Dict(:skew => [true, false], :tdist => [true, false], :K => col
 @time res = pmap(run, sims, on_error=identity)
 
 # Send results to S3
-cdd.s3ync(from="$(Info.resultsdir_compare)/$(simname)",
-          to="$(Info.awsbucket_compare)/$(simname)",
-          tags=`--exclude '*.nfs'`)
+Util.s3ync(from="$(Info.resultsdir_compare)/$(simname)",
+           to="$(Info.awsbucket_compare)/$(simname)",
+           tags=`--exclude '*.nfs'`)
 
 # Post process.
 # using StatsPlots

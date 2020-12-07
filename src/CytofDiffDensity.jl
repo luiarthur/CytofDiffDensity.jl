@@ -14,7 +14,6 @@ export AltSkewT, skewfromaltskewt, scalefromaltskewt, fromaltskewt, toaltscale, 
 export make_sampler
 export loglike_G, loglike_gamma, loglike
 
-include("util.jl")
 include("skewt.jl")
 include("models/CDDG.jl")
 include("models/CDDG_updates.jl")

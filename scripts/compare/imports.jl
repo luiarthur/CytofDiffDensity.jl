@@ -1,6 +1,7 @@
 import Pkg; Pkg.activate("../../")
 include(joinpath(@__DIR__, "../info.jl"))
 
+using Util
 import Random
 using DrWatson
 using MCMC
@@ -42,7 +43,7 @@ function run(sim)  # redirect output?
   thin = 2
 
   callback = make_callback(model, nburn=nburn, nsamps=nsamps, thin=thin)
-  cdd.redirect_stdout_to_file(joinpath(resultsdir, "log.txt")) do
+  Util.redirect_stdout_to_file(joinpath(resultsdir, "log.txt")) do
     # Run MCMC.
     chain, metrics = mcmc(spl, nsamps, init=init, nburn=nburn, thin=thin,
                           callback=callback, exclude=[:v, :zeta, :lambda]);
