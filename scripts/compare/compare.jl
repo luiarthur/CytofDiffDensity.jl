@@ -19,21 +19,36 @@ Util.s3sync(from="$(Info.resultsdir_compare)/$(simname)",
             tags=`--exclude '*.nfs'`)
 
 # Post process.
-# using StatsPlots
-# result = BSON.load(joinpath(make_resultsdir(sims[1]), "results.bson"))
-# plot(result[:metrics][:loglike])
-# 
-# dics = Dict(
-#   map(sim -> savename(sim) => 
-#       dic(BSON.load(joinpath(make_resultsdir(sim), "results.bson"))[:metrics][:loglike]),
-#       sims))
-# 
-# sims1 = filter(sim -> occursin("skew=true_tdist=true", savename(sim)), sims)
-# sims2 = filter(sim -> occursin("skew=true_tdist=false", savename(sim)), sims)
-# sims3 = filter(sim -> occursin("skew=false_tdist=true", savename(sim)), sims)
-# sims4 = filter(sim -> occursin("skew=false_tdist=false", savename(sim)), sims)
-# 
-# plot(map(sim -> getindex(dics, savename(sim)), sims1))
-# plot(map(sim -> getindex(dics, savename(sim)), sims2))
-# plot(map(sim -> getindex(dics, savename(sim)), sims3))
-# plot(map(sim -> getindex(dics, savename(sim)), sims4))
+using StatsPlots
+
+# Plot settings
+ENV["GKSwstype"] = "nul"  # For StatsPlots to plot in background only.
+plotsize = (450, 450)
+Plots.scalefontsizes()
+Plots.scalefontsizes(1.5)
+
+# Get all DICs.
+dics = Dict(
+  map(sim -> savename(sim) => 
+      dic(BSON.load(joinpath(make_resultsdir(sim), "results.bson"))[:metrics][:loglike]),
+      sims))
+
+sims1 = filter(sim -> occursin("skew=true_tdist=true", savename(sim)), sims)
+sims2 = filter(sim -> occursin("skew=true_tdist=false", savename(sim)), sims)
+sims3 = filter(sim -> occursin("skew=false_tdist=true", savename(sim)), sims)
+sims4 = filter(sim -> occursin("skew=false_tdist=false", savename(sim)), sims)
+
+imgdir = mkpath(joinpath(Info.resultsdir_compare, simname, "img"))
+plot(1:5, map(sim -> getindex(dics, savename(sim)), sims4), palette=:tab10,
+     lw=5, marker=:, ms=8, label="n-mix")
+plot!(1:5, map(sim -> getindex(dics, savename(sim)), sims3), palette=:tab10,
+      lw=5, marker=:, ms=8, label="t-mix")
+plot!(1:5, map(sim -> getindex(dics, savename(sim)), sims2), palette=:tab10,
+      lw=5, marker=:, ms=8, label="skew-n mix")
+plot!(1:5, map(sim -> getindex(dics, savename(sim)), sims1), palette=:tab10,
+      lw=5, marker=:, ms=8, label="skew-t mix")
+plot!(size=plotsize)
+xlabel!("K")
+ylabel!("DIC")
+savefig(joinpath(imgdir, "dic-compare.pdf"))
+closeall()
