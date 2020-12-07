@@ -93,3 +93,6 @@ closeall()
 
 include("imports.jl")
 foreach(postprocess, MCMC.ProgressBar(sims))
+Util.s3sync(from="$(Info.resultsdir_compare)/$(simname)",
+            to="$(Info.awsbucket_compare)/$(simname)",
+            tags=`--exclude '*.nfs'`)
