@@ -5,6 +5,8 @@ Subsample a dataframe or matrix.
 `n::Integer`: Size of subset. If `n >= size(df, 1)`, then the original dataset
               is returned. Otherwise, a dataset of size `(n, size(df, 2)` is
               returned.
+
+**NOTE**: requires `DataFrames.jl`
 """
 function subsample(df, n::Integer; seed::Integer=nothing)
   seed == nothing || Random.seed!(seed)
@@ -22,6 +24,8 @@ end
 Partition `data::DataFrame` into control and treatment groups according to
 `treatmentsym::Symbol` (whether missing(->control) or not(->treatment)),
 for a given marker (`markersym::Symbol`).
+
+**NOTE**: requires `DataFrames.jl`
 """
 function partition(data, markersym::Symbol; treatmentsym::Symbol=:treatment,
                    log_response=false)
