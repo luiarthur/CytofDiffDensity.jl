@@ -1,7 +1,7 @@
 name = "CytofDiffDensity"
 uuid = "1f610734-2797-45cd-b0b6-8ba644689e96"
 authors = ["Arthur Lui <luiarthur@gmail.com>"]
-version = "0.5.0"
+version = "0.5.1"
 
 [deps]
 BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
