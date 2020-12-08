@@ -94,20 +94,11 @@ function plot_simtruth_with_post(true_dist, chain, ygrid; alpha=0.3)
   ylabel!("density")
 
   post_dens = hcat(compute_post_density(chain, ygrid)...)
-  pdf_lower = vec(quantiles(post_dens, 0.025, dims=2))
-  pdf_upper = vec(quantiles(post_dens, 0.975, dims=2))
+  pdf_lower = vec(MCMC.quantiles(post_dens, 0.025, dims=2))
+  pdf_upper = vec(MCMC.quantiles(post_dens, 0.975, dims=2))
 
   plot!(ygrid, pdf_lower, fillrange=pdf_upper, alpha=alpha, color=:blue,
         label=nothing)
-end
-
-make_ygrid(y, gridlength=100) = range(minimum(y), maximum(y), length=gridlength)
-
-# TODO: move to MCMC.jl
-function quantiles(X, q; dims, drop=false)
-  Q = mapslices(x -> quantile(x, q), X, dims=dims)
-  out = drop ? dropdims(Q, dims=dims) : Q
-  return out
 end
 
 function postprocess(sim)
@@ -118,7 +109,7 @@ function postprocess(sim)
 
   imgdir = mkpath(joinpath(Info.resultsdir_compare, simname, savename(sim), "img"))
 
-  ygrid = make_ygrid(r.y)
+  ygrid = cdd.make_ygrid(r.y)
   plot_simtruth_with_post(r.true_dist, r.chain, ygrid)
   plot!(size=plotsize)
   savefig(joinpath(imgdir, "post-density.pdf"))

@@ -26,6 +26,7 @@
     chain, metrics = mcmc(spl, nsamps, init=init, nburn=nburn, thin=thin, callback=callback)
     @test length(metrics[:loglike_G]) == nsamps
     @assert length(unique(chain)) == nsamps
+    cdd.printsummary(chain, metrics)
 
     # NOTE: This is just to check that the samples are updated every iteration.
     # Note that as discrete parameters (`lambda_i`) are present, the number of

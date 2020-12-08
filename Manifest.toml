@@ -489,11 +489,11 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[MCMC]]
 deps = ["BangBang", "Bijectors", "Distributions", "LinearAlgebra", "ProgressBars", "Random", "StatsFuns"]
-git-tree-sha1 = "dc5133a6d149f98e80d05f265f2cf666ebef8332"
+git-tree-sha1 = "9dbf407746aa81f31bbbdef9c4a1336dbc1845a6"
 repo-rev = "main"
 repo-url = "https://github.com/luiarthur/MCMC.jl"
 uuid = "c4263776-7399-408b-84de-0a68bf597892"
-version = "0.7.4"
+version = "0.7.6"
 
 [[MKL_jll]]
 deps = ["IntelOpenMP_jll", "Libdl", "Pkg"]

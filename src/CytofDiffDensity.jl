@@ -1,10 +1,11 @@
 module CytofDiffDensity
 
-using MCMC
 using Distributions
-using StatsFuns
-using Random
+using MCMC
 using MCMC: Bijectors
+using Random
+using StatsFuns
+using StatsPlots
 
 export CDDG, CDDgamma, infer
 export MixSkewT
@@ -22,5 +23,6 @@ include("models/CDDgamma.jl")
 include("models/mixskewt-model.jl")
 include("models/mixskewt-updates.jl")
 include("metrics.jl")
+include("postprocess.jl")
 
 end # module

@@ -1,4 +1,4 @@
-using CytofDiffDensity
+using CytofDiffDensity; const cdd = CytofDiffDensity
 using Test
 
 using MCMC
