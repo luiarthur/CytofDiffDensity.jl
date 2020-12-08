@@ -6,3 +6,7 @@ Differential density estimation for CyTOF data in julia.
 
 [ci-img]: https://github.com/luiarthur/CytofDiffDensity.jl/workflows/CI/badge.svg
 [codecov-img]: https://img.shields.io/codecov/c/github/luiarthur/CytofDiffDensity.jl/master.svg?label=codecov
+
+## Downloading data
+The data analyzed in the paper will be downloaded to `data/` by executing `make
+getdata` in the current directory.

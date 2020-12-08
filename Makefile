@@ -1,17 +1,17 @@
 SHELL = /bin/bash
 
-.PHONY: getdata all
+.PHONY: getdata
 
 version = 1.0.0
 data-url = https://github.com/luiarthur/CytofDiffDensityData/archive/v$(version).zip
 
-all: unzip-data
+getdata: unzip-data
 
-getdata: data/v$(version).zip
+unzip-data: download-data
+	cd data && unzip v$(version).zip && mv CytofDiffDensityData-$(version)/data/* .
+	rm -rf data/CytofDiffDensityData* data/*.zip
+
+download-data: data/v$(version).zip
 
 data/v$(version).zip:
 	cd data && wget $(data-url)
-
-unzip-data: getdata
-	cd data && unzip v$(version).zip && mv CytofDiffDensityData-$(version)/data/* .
-	rm -rf data/CytofDiffDensityData* data/*.zip
