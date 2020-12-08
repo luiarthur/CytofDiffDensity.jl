@@ -1,3 +1,5 @@
+ENV["GKSwstype"] = "nul"  # For StatsPlots to plot in background only.
+
 import Pkg; Pkg.activate("../../")
 include(joinpath(@__DIR__, "../info.jl"))
 
@@ -11,7 +13,6 @@ using Distributions  # for loading results.
 using StatsPlots
 
 # Plot settings
-ENV["GKSwstype"] = "nul"  # For StatsPlots to plot in background only.
 plotsize = (450, 450)
 Plots.scalefontsizes()
 Plots.scalefontsizes(1.5)
