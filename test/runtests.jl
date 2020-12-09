@@ -11,4 +11,5 @@ import Random
   include("mixskewt-model.jl")
   include("Pzero.jl")
   include("Gtilde.jl")
+  include("OrderedNormalMeanPrior.jl")
 end

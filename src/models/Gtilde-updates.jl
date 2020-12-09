@@ -12,7 +12,8 @@ function update_etaC(m::Gtilde, s::T) where T
 end
 
 function update_etaT(m::Gtilde, s::T) where T
-  # FIXME: The manuscript is wrong. Need to correct.
+  # FIXME: The code below is correct. The manuscript is wrong and needs to be
+  # corrected.
   if m.beta
     anew = copy(m.eta.alpha)
     foreach(lam -> anew[lam] +=1, s.lambdaT)

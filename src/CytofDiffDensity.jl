@@ -8,7 +8,7 @@ using StatsFuns
 using StatsPlots
 
 export Gtilde, Pzero, infer
-export MixSkewT
+export MixSkewT, OrderedNormalMeanPrior, update
 
 export SkewT, skewtlogpdf, skewtpdf, randskewt
 export AltSkewT, skewfromaltskewt, scalefromaltskewt, fromaltskewt, toaltscale, toaltskew
@@ -16,6 +16,7 @@ export make_sampler, print_model_info
 export loglike
 
 include("util.jl")
+include("OrderedNormalMeanPrior.jl")
 include("skewt.jl")
 include("models/Gtilde.jl")
 include("models/Gtilde-updates.jl")
