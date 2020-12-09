@@ -10,8 +10,8 @@ end
 
 
 function printsummary(chain, metrics; digits=3)
-  if [:loglike_G] in keys(metrics)
-    println("mean loglike: ", mean(metrics[:loglike_G]))
+  if [:loglike] in keys(metrics)
+    println("mean loglike: ", mean(metrics[:loglike]))
   end
 
   sanitize(s) = round(mean(s), digits=digits)

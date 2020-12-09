@@ -1,4 +1,4 @@
-struct CDDG{Y<:AbstractVector{<:Real}, A<:Dirichlet, B<:Normal, C<:Real,
+struct Gtilde{Y<:AbstractVector{<:Real}, A<:Dirichlet, B<:Normal, C<:Real,
             D<:LogNormal, E<:Normal, F<:Gamma} <: MCMC.Model
   yC::Y  # finite log expressions from control group
   yT::Y  # finite log expressions from treatment group
@@ -12,19 +12,19 @@ struct CDDG{Y<:AbstractVector{<:Real}, A<:Dirichlet, B<:Normal, C<:Real,
   tau::F
 end
 
-function CDDG(yC, yT, K, beta; eta=Dirichlet(K, 1/K), mu=nothing,
+function Gtilde(yC, yT, K, beta; eta=Dirichlet(K, 1/K), mu=nothing,
               a_omega=2.5, nu=LogNormal(2, .5), psi=Normal(0, 3),
               tau=Gamma(0.5, 1))
   if mu === nothing
     y = [yC; yT]
     mu = Normal(mean(y), std(y))
   end
-  return CDDG(yC, yT, K, Bool(beta), eta, mu, a_omega, nu, psi, tau)
+  return Gtilde(yC, yT, K, Bool(beta), eta, mu, a_omega, nu, psi, tau)
 end
 
-function print_model_info(m::CDDG)
+function print_model_info(m::Gtilde)
   println("Model info:")
-  for key in fieldnames(CDDG)
+  for key in fieldnames(Gtilde)
     if key == :yC
       println("NC (finite): ", length(m.yC))
     elseif key == :yT
@@ -35,7 +35,7 @@ function print_model_info(m::CDDG)
   end
 end
 
-function MCMC.make_init_state(m::CDDG)
+function MCMC.make_init_state(m::Gtilde)
   NC = length(m.yC)
   NT = length(m.yT)
   etaC = rand(m.eta)
@@ -60,7 +60,7 @@ function MCMC.make_init_state(m::CDDG)
           zetaT=zetaT, sigma=sigma, phi=phi)
 end
 
-function make_sampler(m::CDDG, init)
+function make_sampler(m::Gtilde, init)
   return Gibbs(m,
                Conditional(:etaC, update_etaC),
                Conditional(:etaT, update_etaT),

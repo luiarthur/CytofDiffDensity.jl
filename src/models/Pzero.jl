@@ -1,4 +1,4 @@
-struct CDDgamma{A<:Real, B<:Real}
+struct Pzero{A<:Real, B<:Real}
   NC::Int
   NT::Int
   QC::Int
@@ -8,15 +8,15 @@ struct CDDgamma{A<:Real, B<:Real}
   b::B
 end
 
-function CDDgamma(; NC, NT, QC, QT, beta, a=1.0, b=1.0)
-  return CDDgamma(NC, NT, QC, QT, Bool(beta), a, b)
+function Pzero(; NC, NT, QC, QT, beta, a=1.0, b=1.0)
+  return Pzero(NC, NT, QC, QT, Bool(beta), a, b)
 end
 
 """
 Model0: Proportion of zeros are the same.
 Return posterior samples of gammaC and gammaT.
 """
-function infer_CDDgamma0(m::CDDgamma, nsamps::Int)
+function infer_Pzero0(m::Pzero, nsamps::Int)
   Nsum = m.NC + m.NT
   Qsum = m.QC + m.QT
   
@@ -35,7 +35,7 @@ end
 Model1: Proportion of zeros are different.
 Return posterior samples of gammaC and gammaT.
 """
-function infer_CDDgamma1(m::CDDgamma, nsamps::Int)
+function infer_Pzero1(m::Pzero, nsamps::Int)
   # Posterior distributions.
   distC = Beta(m.a + m.QC, m.b + m.NC - m.QC)
   distT = Beta(m.a + m.QT, m.b + m.NT - m.QT)
@@ -49,10 +49,10 @@ function infer_CDDgamma1(m::CDDgamma, nsamps::Int)
           distC=distC, distT=distT)
 end
 
-function infer(m::CDDgamma, nsamps::Int)
+function infer(m::Pzero, nsamps::Int)
   if m.beta
-    return infer_CDDgamma0(m::CDDgamma, nsamps)
+    return infer_Pzero0(m::Pzero, nsamps)
   else
-    return infer_CDDgamma1(m::CDDgamma, nsamps)
+    return infer_Pzero1(m::Pzero, nsamps)
   end
 end

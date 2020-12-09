@@ -11,7 +11,7 @@ function loglike(m::MixSkewT, s::T) where T
 end
 
 
-function loglike_G(m::CDDG, s::T) where T
+function loglike(m::Gtilde, s::T) where T
   loc = s.mu
   scale = s.sigma
   skew = s.phi
@@ -28,7 +28,7 @@ function loglike_G(m::CDDG, s::T) where T
   return ll
 end
 
-function loglike_gamma(m::CDDgamma, nsamps::Int)
+function loglike(m::Pzero, nsamps::Int)
   m0 = MCMC.BangBang.setpropert(m, :beta, false)
   m1 = MCMC.BangBang.setpropert(m, :beta, true)
 
@@ -38,7 +38,7 @@ function loglike_gamma(m::CDDgamma, nsamps::Int)
   # TODO
 end
 
-# TODO: Put this in MCMC.jl?
+# TODO: Put this in MCMC.jl? TEST.
 # Returns Bayes factor in favor of model 1 (second arg)
 function log_bayes_factor(ll0::AbstractArray{<:Real}, ll1::AbstractArray{<:Real})
   N0 = length(ll0)
@@ -50,16 +50,18 @@ function log_bayes_factor(ll0::AbstractArray{<:Real}, ll1::AbstractArray{<:Real}
   return ll1_harmonic_mean - ll0_harmonic_mean
 end
 
+# TODO: Test.
 # Compute posterior probability: P(beta=1 | data)
-function compute_pm1_G(ll0::AbstractArray{<:Real}, ll1::AbstractArray{<:Real}, p::Real)
+function compute_pm1(::Gtilde, ll0::AbstractArray{<:Real}, ll1::AbstractArray{<:Real}, p::Real)
   log_bf = log_bayes_factor(ll0, ll1)
   log_prior_odds = logit(p)
   return logistic(log_bf + log_prior_odds)
 end
 
+# TODO: Test.
 # Concatenate samples
-function cat_G_samples(chain0, chain1, ll0, ll1, p)
-  pm1 = compute_pm1_G(ll0, ll1, p)
+function cat_samples(m::Gtilde, chain0, chain1, ll0, ll1, p)
+  pm1 = compute_pm1(m, ll0, ll1, p)
   @assert length(chain0) == length(chain1)
   nsamps = length(chain0)
   chain = [pm1 > rand() ? chain1[b] : chain0[b] for b in 1:nsamps]

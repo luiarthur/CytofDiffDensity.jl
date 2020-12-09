@@ -2,7 +2,7 @@ function grab(from::T, p::Symbol, sample_idx::Symbol) where T
   return getfield(from, Symbol(p, sample_idx))
 end
 
-function update_etaC(m::CDDG, s::T) where T
+function update_etaC(m::Gtilde, s::T) where T
   anew = copy(m.eta.alpha)
 
   foreach(lam -> anew[lam] +=1, s.lambdaC)
@@ -11,7 +11,7 @@ function update_etaC(m::CDDG, s::T) where T
   return rand(Dirichlet(anew))
 end
 
-function update_etaT(m::CDDG, s::T) where T
+function update_etaT(m::Gtilde, s::T) where T
   # FIXME: The manuscript is wrong. Need to correct.
   if m.beta
     anew = copy(m.eta.alpha)
@@ -22,7 +22,7 @@ function update_etaT(m::CDDG, s::T) where T
   end
 end
 
-function update_lambda(m::CDDG, s::T, i::Symbol) where T
+function update_lambda(m::Gtilde, s::T, i::Symbol) where T
   y = grab(m, :y, i)
   v = grab(s, :v, i)
   zeta = grab(s, :zeta, i)
@@ -40,10 +40,10 @@ function update_lambda(m::CDDG, s::T, i::Symbol) where T
   return lambda
 end
 
-update_lambdaC(m::CDDG, s::T) where T = update_lambda(m, s, :C)
-update_lambdaT(m::CDDG, s::T) where T = update_lambda(m, s, :T)
+update_lambdaC(m::Gtilde, s::T) where T = update_lambda(m, s, :C)
+update_lambdaT(m::Gtilde, s::T) where T = update_lambda(m, s, :T)
 
-function update_v(m::CDDG, s::T, i::Symbol) where T
+function update_v(m::Gtilde, s::T, i::Symbol) where T
   lami = grab(s, :lambda, i)
   zetai = grab(s, :zeta, i)
   yi = grab(m, :y, i)
@@ -60,10 +60,10 @@ function update_v(m::CDDG, s::T, i::Symbol) where T
   return @.rand(Gamma(shape, 1 / rate))
 end
 
-update_vC(m::CDDG, s::T) where T = update_v(m, s, :C)
-update_vT(m::CDDG, s::T) where T = update_v(m, s, :T)
+update_vC(m::Gtilde, s::T) where T = update_v(m, s, :C)
+update_vT(m::Gtilde, s::T) where T = update_v(m, s, :T)
 
-function update_zeta(m::CDDG, s::T, i::Symbol) where T
+function update_zeta(m::Gtilde, s::T, i::Symbol) where T
   yi = grab(m, :y, i)
   zetai = grab(s, :zeta, i)
   lami = grab(s, :lambda, i)
@@ -79,10 +79,10 @@ function update_zeta(m::CDDG, s::T, i::Symbol) where T
   return @.rand(truncated(Normal(mnew, sqrt(vnew)), 0, Inf))
 end
 
-update_zetaC(m::CDDG, s::T) where T = update_zeta(m, s, :C)
-update_zetaT(m::CDDG, s::T) where T = update_zeta(m, s, :T)
+update_zetaC(m::Gtilde, s::T) where T = update_zeta(m, s, :C)
+update_zetaT(m::Gtilde, s::T) where T = update_zeta(m, s, :T)
 
-function update_mu(m::CDDG, s::T) where T
+function update_mu(m::Gtilde, s::T) where T
   m_mu, s_mu = params(m.mu)
   vkernels = zero.(s.mu)
   mkernels = zero.(s.mu)
@@ -105,26 +105,26 @@ function update_mu(m::CDDG, s::T) where T
   return randn(m.K) .* sqrt.(vnew) + mnew
 end
 
-function update_tau(m::CDDG, s::T) where T
+function update_tau(m::Gtilde, s::T) where T
   a, b = params(m.tau)
   new_shape = a + m.K * m.a_omega
   new_rate = b + sum(1 ./ s.omega)
   return rand(Gamma(new_shape, 1 / new_rate))
 end
 
-function update_sigma(m::CDDG, s::T) where T
+function update_sigma(m::Gtilde, s::T) where T
   return @.scalefromaltskewt(sqrt(s.omega), s.psi)
 end
 
-function update_phi(m::CDDG, s::T) where T
+function update_phi(m::Gtilde, s::T) where T
   return @.skewfromaltskewt(sqrt(s.omega), s.psi)
 end
 
-function update_sigma_phi(m::CDDG, s::T) where T
+function update_sigma_phi(m::Gtilde, s::T) where T
   return (sigma=update_sigma(m, s), phi=update_phi(m, s))
 end
 
-function update_omega(m::CDDG, s::T) where T
+function update_omega(m::Gtilde, s::T) where T
   a, b = m.a_omega, s.tau
   akernel = zero.(s.omega)
   bkernel = zero.(s.omega)
@@ -147,7 +147,7 @@ function update_omega(m::CDDG, s::T) where T
   return @.rand(InverseGamma(anew, bnew))
 end
 
-function logprob_nu(m::CDDG, s::T, nu::AbstractVector{<:Real}) where T
+function logprob_nu(m::Gtilde, s::T, nu::AbstractVector{<:Real}) where T
   logprior = sum(logpdf.(m.nu, nu))
   loglike = let
     _ll = 0.0
@@ -162,7 +162,7 @@ function logprob_nu(m::CDDG, s::T, nu::AbstractVector{<:Real}) where T
   return logprior + loglike
 end
 
-function update_psi(m::CDDG, s::T) where T
+function update_psi(m::Gtilde, s::T) where T
   m_psi, s_psi = params(m.psi)
   vkernel = zero.(s.psi)
   mkernel = zero.(s.psi)
