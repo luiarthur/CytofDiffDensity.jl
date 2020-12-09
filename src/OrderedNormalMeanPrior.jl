@@ -1,5 +1,3 @@
-# TODO: Test.
-
 abstract type ConjugatePrior end
 
 struct OrderedNormalMeanPrior{T} <: ConjugatePrior

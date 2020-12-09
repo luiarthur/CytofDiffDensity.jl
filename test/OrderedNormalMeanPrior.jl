@@ -4,7 +4,7 @@ println("Test OrderedNormalMeanPrior")
   @testset "update" begin
     K = 3
     delta_prior = OrderedNormalMeanPrior(K, Normal(0, 6), truncated(Normal(1, .3), 0, Inf))
-    mm = MixtureModel([Normal(m, .3) for m in [-2, 0, 2]], [.3, .4, .3])
+    mm = MixtureModel([Normal(-2, .3), Normal(0, .2), Normal(2, .5)], [.3, .4, .3])
     y = rand(mm, 500)
 
     function update_mu(m::MixSkewT, s::T) where T
@@ -28,5 +28,6 @@ println("Test OrderedNormalMeanPrior")
     chain, metrics = mcmc(spl, nsamps, nburn=2000, thin=1)
     @test length(unique(chain)) == nsamps
     @test isapprox(mean.(mm.components), mean(getindex.(chain, :mu)), atol=1e-1)
+    @test isapprox(std.(mm.components), mean(getindex.(chain, :sigma)), atol=1e-1)
   end
 end
