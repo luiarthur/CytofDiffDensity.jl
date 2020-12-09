@@ -1,6 +1,0 @@
-- [X] CDDG -> Gtilde
-- [X] CDDgamma -> Pzero
-- [X] loglike_G -> loglike
-- [X] loglike_gamma -> loglike
-- [X] cat_G_samples -> cat_samples(::Gtilde, ...)
-- [X] compute_pm1_G -> compute_pm1(::Gtilde, ...)
