@@ -38,22 +38,10 @@ function loglike(m::Pzero, nsamps::Int)
   # TODO
 end
 
-# TODO: Put this in MCMC.jl? TEST.
-# Returns Bayes factor in favor of model 1 (second arg)
-function log_bayes_factor(ll0::AbstractArray{<:Real}, ll1::AbstractArray{<:Real})
-  N0 = length(ll0)
-  N1 = length(ll1)
-  ll0_harmonic_mean = log(N0) - logsumexp(-ll0)
-  ll1_harmonic_mean = log(N1) - logsumexp(-ll1)
-
-  # Ratio of harmonic means.
-  return ll1_harmonic_mean - ll0_harmonic_mean
-end
-
 # TODO: Test.
 # Compute posterior probability: P(beta=1 | data)
 function compute_pm1(::Gtilde, ll0::AbstractArray{<:Real}, ll1::AbstractArray{<:Real}, p::Real)
-  log_bf = log_bayes_factor(ll0, ll1)
+  log_bf = MCMC.log_bayes_factor(ll0, ll1)
   log_prior_odds = logit(p)
   return logistic(log_bf + log_prior_odds)
 end
