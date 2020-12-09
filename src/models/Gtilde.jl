@@ -1,5 +1,5 @@
 struct Gtilde{Y<:AbstractVector{<:Real}, A<:Dirichlet, B<:Normal, C<:Real,
-            D<:LogNormal, E<:Normal, F<:Gamma} <: MCMC.Model
+             D<:LogNormal, E<:Normal, F<:Gamma} <: MCMC.Model
   yC::Y  # finite log expressions from control group
   yT::Y  # finite log expressions from treatment group
   K::Int  # number of mixture components
