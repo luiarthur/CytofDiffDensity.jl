@@ -12,10 +12,27 @@ struct CDDG{Y<:AbstractVector{<:Real}, A<:Dirichlet, B<:Normal, C<:Real,
   tau::F
 end
 
-function CDDG(yC, yT, K, beta; eta=Dirichlet(K, 1/K), mu=Normal(0, 3),
+function CDDG(yC, yT, K, beta; eta=Dirichlet(K, 1/K), mu=nothing,
               a_omega=2.5, nu=LogNormal(2, .5), psi=Normal(0, 3),
               tau=Gamma(0.5, 1))
+  if mu === nothing
+    y = [yC; yT]
+    mu = Normal(mean(y), std(y))
+  end
   return CDDG(yC, yT, K, Bool(beta), eta, mu, a_omega, nu, psi, tau)
+end
+
+function print_model_info(m::CDDG)
+  println("Model info:")
+  for key in fieldnames(CDDG)
+    if key == :yC
+      println("NC (finite): ", length(m.yC))
+    elseif key == :yT
+      println("NT (finite): ", length(m.yT))
+    else
+      println("$(key): ", getfield(m, key))
+    end
+  end
 end
 
 function MCMC.make_init_state(m::CDDG)

@@ -12,7 +12,7 @@ export MixSkewT
 
 export SkewT, skewtlogpdf, skewtpdf, randskewt
 export AltSkewT, skewfromaltskewt, scalefromaltskewt, fromaltskewt, toaltscale, toaltskew
-export make_sampler
+export make_sampler, print_model_info
 export loglike_G, loglike_gamma, loglike
 
 include("util.jl")

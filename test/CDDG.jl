@@ -11,6 +11,8 @@
     init = MCMC.make_init_state(model)
     spl = make_sampler(model, init)
 
+    print_model_info(model); @test true
+
     nburn = beta === nothing ? 2 : 50
     nsamps = beta === nothing ? 2 : 100
     thin = 4
