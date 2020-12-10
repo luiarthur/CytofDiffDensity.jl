@@ -105,7 +105,7 @@ function print_model_info(m::MixSkewT)
   println("Model info:")
   for key in fieldnames(MixSkewT)
     if key == :y
-      println("N: ", length(y))
+      println("N: ", length(m.y))
     else
       println("$(key): ", getfield(m, key))
     end
