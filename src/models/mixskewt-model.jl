@@ -34,22 +34,27 @@ function MCMC.make_init_state(m::MixSkewT)
           v=v, zeta=zeta, sigma=sigma, phi=phi)
 end
 
-function make_sampler(m::MixSkewT, init)
-  return Gibbs(m,
-               Conditional(:lambda, update_lambda),
-               Conditional(:v, update_v),
-               Conditional(:zeta, update_zeta),
-               Conditional(:eta, update_eta),
-               Conditional(:mu, update_mu),
-               Conditional(:tau, update_tau),
-               Conditional(:omega, update_omega),
-               Conditional(:psi, update_psi),
-               RWM(:nu, logprob_nu, mvarwm(init.nu), bijector=Bijectors.Log{1}()),
-               Conditional((:sigma, :phi), update_sigma_phi))
-end
+# function _make_sampler(m::MixSkewT, init)
+#   return Gibbs(m,
+#                Conditional(:lambda, update_lambda),
+#                Conditional(:v, update_v),
+#                Conditional(:zeta, update_zeta),
+#                Conditional(:eta, update_eta),
+#                Conditional(:mu, update_mu),
+#                Conditional(:tau, update_tau),
+#                Conditional(:omega, update_omega),
+#                Conditional(:psi, update_psi),
+#                RWM(:nu, logprob_nu, mvarwm(init.nu), bijector=Bijectors.Log{1}()),
+#                Conditional((:sigma, :phi), update_sigma_phi))
+# end
 
+"""
+    make_sampler(m::MixSkewT, init; skew::Bool=true, tdist::Bool=true)
 
-function make_sampler(m::MixSkewT, init, skew::Bool, tdist::Bool)
+Note that when `skew=false` and `tdist=false`, then we have a Gaussian mixture
+model.
+"""
+function make_sampler(m::MixSkewT, init; skew::Bool=true, tdist::Bool=true)
   if tdist
     cond_nu = RWM(:nu, logprob_nu, mvarwm(init.nu), bijector=Bijectors.Log{1}())
     _update_v = update_v

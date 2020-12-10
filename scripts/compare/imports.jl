@@ -44,7 +44,7 @@ function run(sim)  # redirect output?
   # TODO: Plot and save data
   model = MixSkewT(y, sim[:K])
   init = MCMC.make_init_state(model)
-  spl = make_sampler(model, init, sim[:skew], sim[:tdist])
+  spl = make_sampler(model, init, skew=sim[:skew], tdist=sim[:tdist])
 
   nburn = 3000
   nsamps = 2000
