@@ -58,7 +58,7 @@ end
 # end
 
 """
-    make_sampler(m::MixSkewT, init; skew::Bool=true, tdist::Bool=true)
+    make_sampler(m::MixSkewT; init, skew::Bool=true, tdist::Bool=true)
 
 Note that when `skew=false` and `tdist=false`, then we have a Gaussian mixture
 model.
