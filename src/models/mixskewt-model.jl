@@ -1,5 +1,6 @@
-struct MixSkewT{T<:AbstractVector{<:Real}, A<:Dirichlet, B<:Normal, C<:Real,
-                D<:LogNormal, E<:Normal, F<:Gamma} <: MCMC.Model
+struct MixSkewT{T<:AbstractVector{<:Real}, A<:Dirichlet,
+                B<:Union{Normal, <:OrderedNormalMeanPrior},
+                C<:Real, D<:LogNormal, E<:Normal, F<:Gamma} <: MCMC.Model
   y::T
   K::Int
   eta::A
@@ -9,6 +10,8 @@ struct MixSkewT{T<:AbstractVector{<:Real}, A<:Dirichlet, B<:Normal, C<:Real,
   psi::E
   tau::F
 end
+
+has_ordered_mu(m::MixSkewT) = m.mu isa OrderedNormalMeanPrior
 
 function MixSkewT(y, K; eta=Dirichlet(K, 1/K), mu=Normal(), a_omega=2.5,
                   nu=LogNormal(2, .5), psi=Normal(0, 3), tau=Gamma(0.5, 1))
@@ -20,7 +23,11 @@ function MCMC.make_init_state(m::MixSkewT)
   eta = rand(m.eta)
   lambda = rand(Categorical(eta), N)
   tau = rand(m.tau)
-  mu = rand(m.mu, m.K)
+  mu = if has_ordered_mu(m)
+    cumsum(rand(m.mu))
+  else
+    rand(m.mu, m.K)
+  end
   omega = rand(InverseGamma(m.a_omega, tau), m.K)
   nu = rand(m.nu, m.K)
   psi = rand(m.psi, m.K)
@@ -34,6 +41,8 @@ function MCMC.make_init_state(m::MixSkewT)
           v=v, zeta=zeta, sigma=sigma, phi=phi)
 end
 
+# TODO: Remove the following if no problems arise.
+#
 # function _make_sampler(m::MixSkewT, init)
 #   return Gibbs(m,
 #                Conditional(:lambda, update_lambda),
@@ -54,7 +63,8 @@ end
 Note that when `skew=false` and `tdist=false`, then we have a Gaussian mixture
 model.
 """
-function make_sampler(m::MixSkewT, init; skew::Bool=true, tdist::Bool=true)
+function make_sampler(m::MixSkewT; init=nothing, skew::Bool=true, tdist::Bool=true)
+  init === nothing && (init = MCMC.make_init_state(m))
   if tdist
     cond_nu = RWM(:nu, logprob_nu, mvarwm(init.nu), bijector=Bijectors.Log{1}())
     _update_v = update_v
@@ -71,15 +81,33 @@ function make_sampler(m::MixSkewT, init; skew::Bool=true, tdist::Bool=true)
     _update_psi = (m, s) -> zeros(m.K)
   end
 
+  if has_ordered_mu(m)
+    _update_mu = (m, s) -> update_mu(m.mu, s.mu, m.y, s.omega[s.lambda], s.lambda)
+  else
+    _update_mu = update_mu
+  end
+
   return Gibbs(m,
                Conditional(:lambda, update_lambda),
                Conditional(:v, _update_v),
                Conditional(:zeta, _update_zeta),
                Conditional(:eta, update_eta),
-               Conditional(:mu, update_mu),
+               Conditional(:mu, _update_mu),
                Conditional(:tau, update_tau),
                Conditional(:omega, update_omega),
                Conditional(:psi, _update_psi),
                cond_nu,
                Conditional((:sigma, :phi), update_sigma_phi))
+end
+
+
+function print_model_info(m::MixSkewT)
+  println("Model info:")
+  for key in fieldnames(MixSkewT)
+    if key == :y
+      println("N: ", length(y))
+    else
+      println("$(key): ", getfield(m, key))
+    end
+  end
 end

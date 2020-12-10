@@ -6,7 +6,7 @@
 
   model = MixSkewT(y, 5)
   init = MCMC.make_init_state(model)
-  spl = make_sampler(model, init)
+  spl = make_sampler(model, init=init)
 
   nburn = 50
   nsamps = 100

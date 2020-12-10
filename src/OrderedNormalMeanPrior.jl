@@ -20,6 +20,10 @@ struct OrderedNormalMeanPrior{T} <: ConjugatePrior
   end
 end
 
+function Distributions.rand(rng::Random.AbstractRNG, d::OrderedNormalMeanPrior)
+  return rand.(rng, d.priors)
+end
+
 function OrderedNormalMeanPrior(K::Int, comp1::Union{Normal, Truncated{<:Normal}},
                                 compk::Truncated{<:Normal})
   K >= 2 || error("`compk` was provided, but provided `K` was < 2!")
