@@ -9,22 +9,14 @@
   for beta in (nothing, 0, 1)
     model = beta === nothing ? Gtilde(yC, yT, 5, 1) : Gtilde(yC, yT, 5, beta)
     init = MCMC.make_init_state(model)
-    spl = make_sampler(model, init)
+    spl = make_sampler(model, init=init)
 
     print_model_info(model); @test true
 
     nburn = beta === nothing ? 2 : 50
     nsamps = beta === nothing ? 2 : 100
     thin = 4
-    function callback(chain, state, sample, i, metrics, iterator)
-      if i == 1
-        metrics[:loglike] = Float64[]
-      elseif i > nburn && mod(i, thin) == 0
-        ll = loglike(model, state)
-        append!(metrics[:loglike], ll)
-        MCMC.ProgressBars.set_postfix(iterator, loglike=round(ll, digits=3))
-      end
-    end
+    callback = make_callback(model, nburn=nburn, nsamps=nsamps, thin=thin)
     chain, metrics = mcmc(spl, nsamps, init=init, nburn=nburn, thin=thin, callback=callback)
     @test length(metrics[:loglike]) == nsamps
     @assert length(unique(chain)) == nsamps
@@ -46,4 +38,6 @@
       end
     end
   end
+
+  # TODO: Test that Ordered prior works.
 end
