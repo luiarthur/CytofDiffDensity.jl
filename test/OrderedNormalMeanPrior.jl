@@ -41,7 +41,7 @@ println("Test OrderedNormalMeanPrior")
     println("Best seed: $seed ($min_loglike)")
 
     # Define callback.
-    nsamps, nburn, thin = (1000, 2000, 2)
+    nsamps, nburn, thin = (2000, 3000, 2)
     callback = make_callback(model, nsamps=nsamps, nburn=nburn, thin=thin)
 
     # Run official model.
@@ -53,7 +53,14 @@ println("Test OrderedNormalMeanPrior")
     @test length(unique(chain)) == nsamps
     @test isapprox(getfield.(mm.components, :loc), mean(getindex.(chain, :mu)), atol=0.1)
     @test isapprox(getfield.(mm.components, :scale), mean(getindex.(chain, :sigma)), atol=0.1)
-    @test isapprox(getfield.(mm.components, :df), mean(getindex.(chain, :nu)), atol=5)
+    @test let
+      # Test that the 95% CI contains truth.
+      nu_post = hcat(getindex.(chain, :nu)...)
+      nu_true = getfield.(mm.components, :df)
+      nu_lower = vec(MCMC.quantiles(nu_post, .025, dims=2))
+      nu_upper = vec(MCMC.quantiles(nu_post, .975, dims=2))
+      all(nu_lower .< nu_true .< nu_upper)
+    end
     @test isapprox(getfield.(mm.components, :skew), mean(getindex.(chain, :phi)), atol=4)
     @test isapprox(mm.prior.p, mean(getindex.(chain, :eta)), atol=.1)
 
