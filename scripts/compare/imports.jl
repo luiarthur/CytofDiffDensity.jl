@@ -42,9 +42,9 @@ function run(sim)  # redirect output?
   resultsdir = make_resultsdir(sim)
 
   # TODO: Plot and save data
-  model = MixSkewT(y, sim[:K])
+  model = MixSkewT(y, sim[:K], skew=sim[:skew], tdist=sim[:tdist])
   init = MCMC.make_init_state(model)
-  spl = make_sampler(model, init, skew=sim[:skew], tdist=sim[:tdist])
+  spl = make_sampler(model, init)
 
   nburn = 3000
   nsamps = 2000

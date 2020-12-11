@@ -15,6 +15,9 @@
   chain, metrics = mcmc(spl, nsamps, init=init, nburn=nburn, thin=thin)
   @test length(unique(chain)) == nsamps
 
+  # TODO:
+  # - [ ] Test that the parameters are correct.
+
   syms = keys(init)
   for s in syms
     # println(s)
