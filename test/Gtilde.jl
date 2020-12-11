@@ -44,7 +44,7 @@
               @test length(unique(samps)) == 1
             end
           elseif s in (:lambdaC, :lambdaT)  # discrete
-            @test length(unique(samps)) > nsamps * 0.3
+            @test length(unique(samps)) > nsamps * 0.1
           elseif !cdd.uses_skew(model) && s in (:zetaC, :zetaT, :psi, :phi)
             @test length(unique(samps)) == 1
           elseif !cdd.uses_tdist(model) && s in (:vC, :vT)
