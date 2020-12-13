@@ -20,7 +20,7 @@ sims = dict_list(Dict(:beta => collect(0:1),
 foreach(z -> println("$(z[1]) => $(z[2])"), zip(sims, res))
 
 # Send results to S3
-Util.s3sync(from="$(Info.resultsdir_simstudy)/$(simname)",
-            to="$(Info.awsbucket_simstudy)/$(simname)",
-            tags=`--exclude '*.nfs'`)
+# Util.s3sync(from="$(Info.resultsdir_simstudy)/$(simname)",
+#             to="$(Info.awsbucket_simstudy)/$(simname)",
+#             tags=`--exclude '*.nfs'`)
 
