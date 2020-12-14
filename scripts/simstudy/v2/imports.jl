@@ -18,7 +18,7 @@ plotsize = (450, 450)
 Plots.scalefontsizes()
 Plots.scalefontsizes(1.5)
 
-simname = "v1"
+simname = "v2"
 make_resultsdir(sim) = mkpath("$(Info.resultsdir_simstudy)/$(simname)/$(savename(sim))")
 
 function run(sim)
@@ -46,10 +46,11 @@ function run(sim)
 
   # TODO: Does this help?
   mu_prior = let
-    tn_mean = (quantile(y, .9) - mean(y)) / sim.K
-    OrderedNormalMeanPrior(sim.K,
-                           Normal(quantile(y, .1), 1),
-                           truncated(Normal(tn_mean), 0, Inf))
+    Normal(mean(y), std(y))
+    # tn_mean = (quantile(y, .9) - mean(y)) / sim.K
+    # OrderedNormalMeanPrior(sim.K,
+    #                        Normal(quantile(y, .1), 1),
+    #                        truncated(Normal(tn_mean), 0, Inf))
   end
 
   Random.seed!(0)

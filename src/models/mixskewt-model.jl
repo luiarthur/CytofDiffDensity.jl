@@ -137,7 +137,8 @@ end
 """
 Finding a good starting value is important when using OrderedNormalMeanPrior.
 """
-function find_good_seed(model::MCMC.Model; seeds=1:10, nsamps=1, nburn=200, thin=1)
+function find_good_seed(model::MCMC.Model; seeds=1:10, nsamps=1, nburn=200,
+                        thin=1, kwargs...)
   # Preallocate results in Dict{seed => mean(loglike)}.
   results = Dict((seed, 0.0) for seed in seeds)
   callback = make_callback(model, nsamps=nsamps, nburn=nburn, thin=thin)
@@ -146,7 +147,7 @@ function find_good_seed(model::MCMC.Model; seeds=1:10, nsamps=1, nburn=200, thin
     Random.seed!(seed)
     spl = make_sampler(model)
     chain, metrics = mcmc(spl, nsamps, nburn=nburn, thin=thin,
-                          callback=callback, progress=false)
+                          callback=callback, progress=false, kwargs...)
     results[seed] = mean(metrics[:loglike])
   end
 
