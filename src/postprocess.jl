@@ -10,8 +10,9 @@ end
 
 
 function printsummary(chain, metrics; digits=3)
-  if [:loglike] in keys(metrics)
+  if :loglike in keys(metrics)
     println("mean loglike: ", mean(metrics[:loglike]))
+    println("DIC: ", MCMC.dic(metrics[:loglike]))
   end
 
   sanitize(s) = round(mean(s), digits=digits)
@@ -49,10 +50,10 @@ function plot_post_density!(chain, ygrid; plot_mean=true, alpha=0.3)
   p = let
     plot!(ygrid, pdfC_lower, fillrange=pdfC_upper, alpha=alpha, color=:blue,
          label=nothing)
-    plot_mean && plot!(ygrid, pdfC_mean, color=:blue)
+    plot_mean && plot!(ygrid, pdfC_mean, color=:blue, label=nothing)
     plot!(ygrid, pdfT_lower, fillrange=pdfT_upper, alpha=alpha, color=:red,
           label=nothing)
-    plot_mean && plot!(ygrid, pdfT_mean, color=:red)
+    plot_mean && plot!(ygrid, pdfT_mean, color=:red, label=nothing)
     ylabel!("density")
   end
 
