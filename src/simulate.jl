@@ -16,13 +16,13 @@ end
 
 
 function simulate_ftilde(; NC, NT, etaC, etaT, loc, scale, df, skew, gammaC, gammaT)
-  QC = rand(NC) .> gammaC
-  QT = rand(NT) .> gammaT
+  QC = sum(rand(NC) .> gammaC)
+  QT = sum(rand(NT) .> gammaT)
 
   NC_finite = NC - QC
   NT_finite = NT - QT
 
-  pzero = (gammaC=gammaC, gammaT=gammaT, NC_zero=NC_zero, NT_zero=NT_zero)
+  pzero = (gammaC=gammaC, gammaT=gammaT, QC=QC, QT=QT, NC=NC, NT=NT)
 
   gtilde = simulate_gtilde(NC=NC_finite, NT=NT_finite, etaC=etaC, etaT=etaT, loc=loc,
                            scale=scale, df=df, skew=skew)
