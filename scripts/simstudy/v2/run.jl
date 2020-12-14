@@ -27,5 +27,3 @@ pp_res = pmap(postprocess, sims)
 # Util.s3sync(from="$(Info.resultsdir_simstudy)/$(simname)",
 #             to="$(Info.awsbucket_simstudy)/$(simname)",
 #             tags=`--exclude '*.nfs'`)
-
-

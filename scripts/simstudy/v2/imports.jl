@@ -45,13 +45,7 @@ function run(sim)
   closeall()
 
   # TODO: Does this help?
-  mu_prior = let
-    Normal(mean(y), std(y))
-    # tn_mean = (quantile(y, .9) - mean(y)) / sim.K
-    # OrderedNormalMeanPrior(sim.K,
-    #                        Normal(quantile(y, .1), 1),
-    #                        truncated(Normal(tn_mean), 0, Inf))
-  end
+  mu_prior = Normal(mean(y), std(y))
 
   Random.seed!(0)
   model = Gtilde(simdata.yC, simdata.yT, sim.K, sim.beta, mu=mu_prior)
