@@ -14,7 +14,7 @@ export SkewT, skewtlogpdf, skewtpdf, randskewt
 export AltSkewT, skewfromaltskewt, scalefromaltskewt, fromaltskewt, toaltscale, toaltskew
 export make_sampler, print_model_info
 export find_good_seed, make_callback
-export loglike, simulate_gtilde
+export loglike, simulate_gtilde, simulate_ftilde
 
 include("util.jl")
 include("OrderedNormalMeanPrior.jl")
@@ -24,7 +24,7 @@ include("models/Gtilde-updates.jl")
 include("models/Pzero.jl")
 include("models/mixskewt-model.jl")
 include("models/mixskewt-updates.jl")
-include("simulate-gtilde.jl")
+include("simulate.jl")
 include("metrics.jl")
 include("postprocess.jl")
 
