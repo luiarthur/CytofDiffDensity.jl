@@ -16,8 +16,8 @@ end
 
 
 function simulate_ftilde(; NC, NT, etaC, etaT, loc, scale, df, skew, gammaC, gammaT)
-  QC = sum(rand(NC) .> gammaC)
-  QT = sum(rand(NT) .> gammaT)
+  QC = sum(gammaC .> rand(NC))
+  QT = sum(gammaC .> rand(NT))
 
   NC_finite = NC - QC
   NT_finite = NT - QT
