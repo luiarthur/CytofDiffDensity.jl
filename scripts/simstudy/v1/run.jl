@@ -24,3 +24,5 @@ foreach(z -> println("$(z[1]) => $(z[2])"), zip(sims, res))
 #             to="$(Info.awsbucket_simstudy)/$(simname)",
 #             tags=`--exclude '*.nfs'`)
 
+# Post process
+postprocess(Dict(:beta=>1, :K=>5, :snum=>1))

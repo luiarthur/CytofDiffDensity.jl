@@ -72,3 +72,72 @@ function run(sim)
                    :model => model))
   end
 end
+
+function _postprocess(sim, resultsdir)
+  sim = (; sim...)
+
+  # Make image dir if needed.
+  imgdir = mkpath(joinpath(resultsdir, "img"))
+
+  # Load results.
+  # chain, metrics, simdata, model.
+  r = (; BSON.load(joinpath(resultsdir, "results.bson"))...)
+
+  # Print summary stats
+  cdd.printsummary(r.chain, r.metrics); println()
+
+  # Print model info
+  cdd.print_model_info(r.model)
+
+  # Plot loglike
+  plot(r.metrics[:loglike], label=nothing)
+  savefig(joinpath(imgdir, "loglike.pdf"))
+  closeall()
+
+  # Plot posterior for each multivariate parameter.
+  for sym in [:mu, :sigma, :nu, :phi, :etaC, :etaT]
+    p = hcat(getindex.(r.chain, sym)...)'
+
+    plot(p, label=nothing)
+    savefig(joinpath(imgdir, "$(sym)-trace.pdf"))
+    closeall()
+
+    boxplot(p, label=nothing)
+    savefig(joinpath(imgdir, "$(sym).pdf"))
+    closeall()
+  end
+
+  # Plot posterior for each univariate parameter.
+  for sym in [:tau]
+    p = vec(hcat(getindex.(r.chain, sym)...))
+
+    plot(p, label=nothing)
+    savefig(joinpath(imgdir, "$(sym)-trace.pdf"))
+    closeall()
+
+    histogram(p, label=nothing, normalize=true)
+    savefig(joinpath(imgdir, "$(sym).pdf"))
+    closeall()
+  end
+
+  # TODO: Plot posterior density for C and T.
+  y = [r.simdata.yC; r.simdata.yT]
+  ygrid = cdd.make_ygrid(y, 100)
+  plot(size=plotsize)
+  cdd.plot_post_density!(r.chain, ygrid)
+  cdd.plot_simtruth(r.simdata.mmC, r.simdata.mmT, ygrid, label=nothing)
+  savefig(joinpath(imgdir, "post-density.pdf"))
+  closeall()
+
+  # Compute BF in favor of M1.
+end
+
+
+function postprocess(sim)
+  # Make results dir if needed.
+  resultsdir = make_resultsdir(sim)
+
+  Util.redirect_stdout_to_file(joinpath(resultsdir, "info.txt")) do
+    _postprocess(sim, resultsdir)
+  end
+end
