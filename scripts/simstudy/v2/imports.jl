@@ -54,7 +54,7 @@ function run(sim)
   init = MCMC.make_init_state(model)
   spl = make_sampler(model, init=init)
 
-  nburn, nsamps, thin = (4000, 4000, 1)
+  nburn, nsamps, thin = (4000, 10000, 1)
   callback = make_callback(model, nburn=nburn, nsamps=nsamps, thin=thin)
 
   Util.redirect_stdout_to_file(joinpath(resultsdir, "log.txt")) do
