@@ -30,6 +30,13 @@ for d in dict_list(Dict(:K => collect(2:6), :snum => collect(1:4)))
   compute_bf(d0, d1)
 end
 
+# TODO: Combine results
+for d in dict_list(Dict(:snum => collect(1:4)))
+  combine_results(d)
+end
+
+# Model comparisons
+
 # Send results to S3
 # Util.s3sync(from="$(Info.resultsdir_simstudy)/$(simname)",
 #             to="$(Info.awsbucket_simstudy)/$(simname)",

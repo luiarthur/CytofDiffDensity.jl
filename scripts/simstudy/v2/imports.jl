@@ -167,3 +167,12 @@ function compute_bf(sim0, sim1)
     write(io, "log BF(PZero) in favor of model 1: $(log_bf_pzero) \n")
   end
 end
+
+function combine_results(d; p=0.1, Ks=[2,3,4,5,6])
+  d = deepcopy(d)
+  resdir = make_resultsdir(d)
+  
+  # For each K, plot gtilde, plot gamma density.
+
+  # Plot DIC across all K.
+end
