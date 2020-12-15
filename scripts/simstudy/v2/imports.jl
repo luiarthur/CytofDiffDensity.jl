@@ -54,7 +54,7 @@ function run(sim)
   init = MCMC.make_init_state(model)
   spl = make_sampler(model, init=init)
 
-  nburn, nsamps, thin = (4000, 10000, 1)
+  nburn, nsamps, thin = (10000, 4000, 1)
   callback = make_callback(model, nburn=nburn, nsamps=nsamps, thin=thin)
 
   Util.redirect_stdout_to_file(joinpath(resultsdir, "log.txt")) do
@@ -158,8 +158,8 @@ function compute_bf(sim0, sim1)
     MCMC.log_bayes_factor(r0.metrics[:loglike], r1.metrics[:loglike])
   end
   log_bf_pzero = let
-    pzero = Pzero(NC=r.simdata.NC, NT=r.simdata.NT,
-                  QC=r.simdata.QC, QT=r.simdata.QT)
+    pzero = Pzero(NC=r0.simdata.NC, NT=r0.simdata.NT,
+                  QC=r0.simdata.QC, QT=r0.simdata.QT)
     cdd.compute_log_bf(pzero, 10000)
   end
   open(joinpath(resultsdir1, "logbf.txt"), "w") do io
