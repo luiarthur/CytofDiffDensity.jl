@@ -6,7 +6,8 @@ using Distributions
 using MCMC
 using StatsPlots
 
-function make_ordered_prior(y, K; s=0.1, upper=.9, lower=.1)
+function make_ordered_prior(y, K; s=nothing, upper=.9, lower=.1)
+  s === nothing && (s = std(y) / K)
   comp1_mean = quantile(y, lower)
   compk_mean = (quantile(y, upper) - quantile(y, lower)) / (K - 1)
   return OrderedNormalMeanPrior(K,
@@ -30,19 +31,28 @@ plot(hcat(getindex.(chain, :mu)...)')
 
 
 # SkewT Ordered Prior.
+K = 3
 m2 = MixtureModel([SkewT(-5, 1, 10, -7),
-                   SkewT(0, .8, 10, -7),
-                   SkewT(3, .7, 10, -7)], [.3, .4, .3])
+                   SkewT(0, 2, 10, -12),
+                   SkewT(3, 3, 10, -10)], [.3, .4, .3])
 y = rand(m2, 1000)
+
+# m2 = MixtureModel([SkewT(-5, .2, 10, -7),
+#                    SkewT(0, .3, 10, -7),
+#                    SkewT(5, .2, 10, -7)], [.3, .4, .3])
+# y = rand(m2, 1000)
+
 histogram(y, bins=100, label=nothing)
 onm_prior = make_ordered_prior(y, K, s=1)
 model2 = MixSkewT(y, K, mu=onm_prior, skew=true, tdist=true)
 spl = make_sampler(model2)
-chain, metrics = mcmc(spl, 1000, nburn=2000, thin=3)
+chain, metrics = mcmc(spl, 1000, nburn=0, thin=3)
 mean(getindex.(chain, :mu))
 mean(getindex.(chain, :eta))
-plot(hcat(getindex.(chain, :mu)...)', label=nothing); hline!(getfield.(m2.components, :loc), label=nothing, ls=:dot, color=:black)
+plot(hcat(getindex.(chain, :mu)...)', label=nothing)
+hline!(getfield.(m2.components, :loc), label=nothing, ls=:dot, color=:black)
 plot(hcat(getindex.(chain, :sigma)...)')
 plot(hcat(getindex.(chain, :nu)...)')
 plot(hcat(getindex.(chain, :phi)...)')
 plot(hcat(getindex.(chain, :eta)...)')
+
