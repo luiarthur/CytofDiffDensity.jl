@@ -61,9 +61,11 @@ function plot_post_density!(chain, ygrid; plot_mean=true, alpha=0.3)
 end
 
 
-# TODO: test
 function plot_simtruth(dC, dT, ygrid; kwargs...)
   plot!(ygrid, pdf.(dC, ygrid), color=:blue, ls=:dot; kwargs...)
   plot!(ygrid, pdf.(dT, ygrid), color=:red, ls=:dot; kwargs...)
   ylabel!("density")
 end
+
+
+
