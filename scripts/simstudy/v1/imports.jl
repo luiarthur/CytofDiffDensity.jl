@@ -129,8 +129,6 @@ function _postprocess(sim, resultsdir)
   cdd.plot_simtruth(r.simdata.mmC, r.simdata.mmT, ygrid, label=nothing)
   savefig(joinpath(imgdir, "post-density.pdf"))
   closeall()
-
-  # Compute BF in favor of M1.
 end
 
 
@@ -140,5 +138,35 @@ function postprocess(sim)
 
   Util.redirect_stdout_to_file(joinpath(resultsdir, "info.txt")) do
     _postprocess(sim, resultsdir)
+  end
+end
+
+
+function compute_bf(sim0, sim1)
+  sim0 = (; sim0...)
+  sim1 = (; sim1...)
+
+  # Get imgdir for M1.
+  resultsdir0 = make_resultsdir(sim0)
+  resultsdir1 = make_resultsdir(sim1)
+  imgdir = mkpath(joinpath(resultsdir1, "", "img"))
+
+  # Load results.
+  # chain, metrics, simdata, model.
+  r0 = (; BSON.load(joinpath(resultsdir0, "results.bson"))...)
+  r1 = (; BSON.load(joinpath(resultsdir1, "results.bson"))...)
+
+  # Compute BF in favor of M1.
+  log_bf_gtilde = let
+    MCMC.log_bayes_factor(r0.metrics[:loglike], r1.metrics[:loglike])
+  end
+  log_bf_pzero = let
+    pzero = Pzero(NC=r.simdata.NC, NT=r.simdata.NT,
+                  QC=r.simdata.QC, QT=r.simdata.QT)
+    cdd.compute_log_bf(pzero, 10000)
+  end
+  open(joinpath(resultsdir1, "logbf.txt"), "w") do io
+    write(io, "log BF(Gtilde) in favor of model 1: $(log_bf_gtilde) \n")
+    write(io, "log BF(PZero) in favor of model 1: $(log_bf_pzero) \n")
   end
 end
