@@ -32,7 +32,7 @@ println("Test OrderedNormalMeanPrior")
     #   too strict and skew may be extremely negative in posterior.)
     # - OrderedNormalMeanPrior needs to somewhat loose: if too strict, then
     #   difficult to escape bad local modes.
-    onm_prior = OrderedNormalMeanPrior(K, Normal(0, 3), truncated(Normal(1, 3), 0, Inf))
+    onm_prior = OrderedNormalMeanPrior(K, Normal(-5, 1), truncated(Normal(1, 3), 0, Inf))
     model = MixSkewT(y, K, mu=onm_prior, psi=Normal(0, 3), eta=Dirichlet(K, 1))
     print_model_info(model)
 
