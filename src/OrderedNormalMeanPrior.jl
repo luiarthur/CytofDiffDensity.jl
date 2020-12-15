@@ -42,54 +42,56 @@ function get_untruncated_mean_std(d::Union{Normal,Truncated{<:Normal}})
   return (get_untruncated_mean(d), get_untruncated_std(d))
 end
    
-# TODO: Test
-function update(p::OrderedNormalMeanPrior, curr::AbstractVector{<:Real},
+function update(p::OrderedNormalMeanPrior, delta::AbstractVector{<:Real},
                 y::AbstractVector{<:Real}, sigmasq::AbstractVector{<:Real},
                 lambda::AbstractVector{<:Integer}) 
-  K = ncomponents(p)
+  next = copy(delta)
+  for k in eachindex(next)
+    next[k] = update(p, k, next, y, sigmasq, lambda)
+  end
+  return next
+end
 
+function update(p::OrderedNormalMeanPrior, k::Int, delta::AbstractVector{<:Real},
+                y::AbstractVector{<:Real}, sigmasq::AbstractVector{<:Real},
+                lambda::AbstractVector{<:Integer}) 
   # New value.
-  next = copy(curr)
+  next = copy(delta)
 
-  # Update `next` sequentially.
-  for k in 1:K
-    # Set of indices such that lambda[i] > k
-    Ck = findall(lambda .>= k)
+  # Set of indices such that lambda[i] > k
+  Ck = findall(lambda .>= k)
 
-    # Prior (mean, sd) of untruncated Normal
-    mk, sk = get_untruncated_mean_std(p.priors[k])
+  # Prior (mean, sd) of untruncated Normal
+  mk, sk = get_untruncated_mean_std(p.priors[k])
 
-    # Compute new variance for untruncated Normal
-    sigmasq_k = sigmasq[Ck]
-    vnew = 1 / (1/sk^2 +  sum(1 ./ sigmasq_k))
+  # Compute new variance for untruncated Normal
+  sigmasq_k = sigmasq[Ck]
+  vnew = 1 / (1/sk^2 +  sum(1 ./ sigmasq_k))
 
-    # Compute new mean for untruncated Normal
-    next[k] = 0
-    mu = cumsum(next)
-    lam = lambda[Ck]
-    mnew = vnew * (mk / sk^2 + sum((y[Ck] - mu[lam]) ./ sigmasq_k))
+  # Compute new mean for untruncated Normal
+  next[k] = 0
+  mu = to_mu(next)
+  lam = lambda[Ck]
+  mnew = vnew * (mk/sk^2 + sum((y[Ck] - mu[lam]) ./ sigmasq_k))
 
-    d_untruncated = Normal(mnew, sqrt(vnew))
+  d_untruncated = Normal(mnew, sqrt(vnew))
 
-    if p.priors[k] isa Normal
-      d = d_untruncated
-    else
-      d = truncated(d_untruncated, p.priors[k].lower, p.priors[k].upper)
-    end
-
-    next[k] = rand(d)
+  if p.priors[k] isa Normal
+    d = d_untruncated
+  else
+    d = truncated(d_untruncated, p.priors[k].lower, p.priors[k].upper)
   end
 
-  return next
+  return rand(d)
 end
 
 to_mu(delta) = cumsum(delta)
 to_delta(mu) = [mu[1]; diff(mu)]
 
-function update_mu(p::OrderedNormalMeanPrior, curr::AbstractVector{<:Real},
+function update_mu(p::OrderedNormalMeanPrior, mu::AbstractVector{<:Real},
                    y::AbstractVector{<:Real}, sigmasq::AbstractVector{<:Real},
                    lambda::AbstractVector{<:Integer})
-  delta = to_delta(curr)
+  delta = to_delta(mu)
   new_delta = update(p, delta, y, sigmasq, lambda)
   return to_mu(new_delta)
 end

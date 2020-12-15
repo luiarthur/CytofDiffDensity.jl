@@ -30,7 +30,8 @@ function MCMC.make_init_state(m::MixSkewT)
   lambda = rand(Categorical(eta), N)
   tau = rand(m.tau)
   mu = if has_ordered_mu(m)
-    cumsum(rand(m.mu))
+    # cumsum(rand(m.mu))
+    cumsum(mean.(m.mu.priors))
   else
     rand(m.mu, m.K)
   end
@@ -83,10 +84,10 @@ function make_sampler(m::MixSkewT; init=nothing)
   end
 
   if has_ordered_mu(m)
-    _update_mu = (m, s) -> let
+    _update_mu = (model, s) -> let
       s2 = s.omega[s.lambda] ./ s.v
-      g = m.y - s.psi[s.lambda] .* s.zeta
-      update_mu(m.mu, s.mu, g, s2, s.lambda)
+      g = model.y - s.psi[s.lambda] .* s.zeta
+      update_mu(model.mu, s.mu, g, s2, s.lambda)
     end
   else
     _update_mu = update_mu
