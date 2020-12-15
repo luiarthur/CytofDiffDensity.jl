@@ -95,3 +95,16 @@ function update_mu(p::OrderedNormalMeanPrior, mu::AbstractVector{<:Real},
   new_delta = update(p, delta, y, sigmasq, lambda)
   return to_mu(new_delta)
 end
+
+
+"""
+Make ordered prior for mu (implied by delta).
+"""
+function make_ordered_prior(y, K; s=nothing, upper=.9, lower=.1)
+  s === nothing && (s = std(y) / K)
+  comp1_mean = quantile(y, lower)
+  compk_mean = (quantile(y, upper) - quantile(y, lower)) / (K - 1)
+  return OrderedNormalMeanPrior(K,
+                                Normal(comp1_mean, s),
+                                truncated(Normal(compk_mean, s), 0, Inf))
+end

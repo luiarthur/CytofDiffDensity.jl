@@ -12,7 +12,7 @@ export MixSkewT, OrderedNormalMeanPrior, update
 
 export SkewT, skewtlogpdf, skewtpdf, randskewt
 export AltSkewT, skewfromaltskewt, scalefromaltskewt, fromaltskewt, toaltscale, toaltskew
-export make_sampler, print_model_info
+export make_sampler, print_model_info, make_ordered_prior
 export find_good_seed, make_callback
 export loglike, simulate_gtilde, simulate_ftilde
 
