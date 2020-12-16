@@ -12,6 +12,7 @@ using MCMC
 using BSON
 using Distributions  # required for `BSON.load`
 using StatsPlots
+using StatsFuns
 
 # Plot settings
 plotsize = (450, 450)
@@ -45,12 +46,8 @@ function run(sim)
   closeall()
 
   # TODO: Does this help?
-  mu_prior = let
-    tn_mean = (quantile(y, .9) - mean(y)) / sim.K
-    OrderedNormalMeanPrior(sim.K,
-                           Normal(quantile(y, .1), 1),
-                           truncated(Normal(tn_mean), 0, Inf))
-  end
+  mu_prior = cdd.make_ordered_prior(y, sim.K,
+                                    s=(maximum(y) - minimum(y)) / (2 * sim.K))
 
   Random.seed!(0)
   model = Gtilde(simdata.yC, simdata.yT, sim.K, sim.beta, mu=mu_prior)
@@ -59,7 +56,7 @@ function run(sim)
   init = MCMC.make_init_state(model)
   spl = make_sampler(model, init=init)
 
-  nburn, nsamps, thin = (4000, 4000, 1)
+  nburn, nsamps, thin = (10000, 4000, 2)
   callback = make_callback(model, nburn=nburn, nsamps=nsamps, thin=thin)
 
   Util.redirect_stdout_to_file(joinpath(resultsdir, "log.txt")) do
@@ -142,31 +139,80 @@ function postprocess(sim)
 end
 
 
-function compute_bf(sim0, sim1)
-  sim0 = (; sim0...)
-  sim1 = (; sim1...)
+function load_results(snum, K, beta)
+  d = Dict(:snum => snum, :K => K, :beta => beta)
+  resdir = make_resultsdir(d)
+  return (; BSON.load(joinpath(resdir, "results.bson"))...)
+end
 
-  # Get imgdir for M1.
-  resultsdir0 = make_resultsdir(sim0)
-  resultsdir1 = make_resultsdir(sim1)
-  imgdir = mkpath(joinpath(resultsdir1, "", "img"))
 
-  # Load results.
-  # chain, metrics, simdata, model.
-  r0 = (; BSON.load(joinpath(resultsdir0, "results.bson"))...)
-  r1 = (; BSON.load(joinpath(resultsdir1, "results.bson"))...)
+function combine_results(snum::Integer, K::Integer; p::Real=0.1)
+  (0 < p < 1) || error("0 < p < 1 required!")
 
-  # Compute BF in favor of M1.
-  log_bf_gtilde = let
-    MCMC.log_bayes_factor(r0.metrics[:loglike], r1.metrics[:loglike])
-  end
-  log_bf_pzero = let
-    pzero = Pzero(NC=r.simdata.NC, NT=r.simdata.NT,
-                  QC=r.simdata.QC, QT=r.simdata.QT)
-    cdd.compute_log_bf(pzero, 10000)
-  end
-  open(joinpath(resultsdir1, "logbf.txt"), "w") do io
+  # Results dir 
+  resdir = make_resultsdir(Dict(:snum => snum, :K => K))
+  imgdir = mkpath(joinpath(resdir, "img"))
+
+  # Load results
+  r0 = load_results(snum, K, 0)
+  r1 = load_results(snum, K, 1)
+  length(r0.chain) == length(r1.chain) || error("Chain lengths need to be equal!")
+
+  # Loglikelihoods
+  ll0 = r0.metrics[:loglike]
+  ll1 = r1.metrics[:loglike]
+  length(ll0) == length(ll1) || error("Loglikelihood lengths need to be equal!")
+
+  # Number of MCMC samples
+  B = length(ll0)
+
+  # Log BF for Gtilde
+  log_bf_gtilde = MCMC.log_bayes_factor(ll0, ll1)
+
+  # Log bf for PZero
+  pzero = Pzero(NC=r0.simdata.NC, NT=r0.simdata.NT,
+                QC=r0.simdata.QC, QT=r0.simdata.QT)
+  log_bf_pzero = cdd.compute_log_bf(pzero, B)
+
+  # Compute P(β=1 | data)
+  pm1 = logistic(log_bf_gtilde + log_bf_pzero + logit(p))
+
+  # Combine chains and loglikelihoods.
+  beta = pm1 .> rand(B)
+  chain = [beta[b] ? r1.chain[b] : r0.chain[b] for b in 1:B]
+  loglike = [beta[b] ? ll1[b] : ll0[b] for b in 1:B]
+  m0_gamma = cdd.infer_Pzero0(pzero, B)
+  m1_gamma = cdd.infer_Pzero1(pzero, B)
+  gammaC = [beta[b] ? m1_gamma.gammaC_samples[b] : m0_gamma.gammaC_samples[b] for b in 1:B]
+  gammaT = [beta[b] ? m1_gamma.gammaT_samples[b] : m0_gamma.gammaT_samples[b] for b in 1:B]
+
+  # Plot gamma
+  plot(size=plotsize)
+  histogram!(gammaC, normalize=true, alpha=0.3, color=:blue)
+  histogram!(gammaT, normalize=true, alpha=0.3, color=:red)
+  savefig(joinpath(imgdir, "gamma.pdf"))
+  closeall()
+  
+  # Plot Gtilde
+  y = [r0.simdata.yC; r0.simdata.yT]
+  ygrid = range(quantile(y, .05), quantile(y, .95), length=100)
+  plot(size=plotsize)
+  cdd.plot_post_density!(chain, ygrid)
+  cdd.plot_simtruth(r0.simdata.mmC, r0.simdata.mmT, ygrid, label=nothing)
+  savefig(joinpath(imgdir, "post-density.pdf"))
+  closeall()
+
+  # DIC
+  merged_dic = MCMC.dic(loglike)
+
+  # Write results
+  open(joinpath(resdir, "metrics.txt"), "w") do io
     write(io, "log BF(Gtilde) in favor of model 1: $(log_bf_gtilde) \n")
     write(io, "log BF(PZero) in favor of model 1: $(log_bf_pzero) \n")
+    write(io, "p: $(p) \n")
+    write(io, "pm1: $(pm1) \n")
+    write(io, "DIC: $(merged_dic) \n")
   end
+
+  return (chain=chain, loglike=loglike, dic=merged_dic)
 end
