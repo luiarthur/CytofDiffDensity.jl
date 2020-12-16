@@ -24,15 +24,26 @@ pp_res = pmap(postprocess, sims)
 # postprocess(Dict(:beta=>1, :K=>5, :snum=>1))
 
 # TODO: Combine results
-# for snum in [1,2,3,4]
-#   for K in [2,3,4,5,6]
-#     combine_results(snum, K)
-#   end
-# end
+for snum in [1,2,3,4]
+  imdir = mkpath(joinpath(Info.resultsdir_simstudy, simname, "img"))
+  dics = Float64[]
+  for K in MCMC.ProgressBar([2,3,4,5,6])
+    cr = combine_results(snum, K)
+    append!(dics, cr.dic)
+  end
+  open(joinpath(imdir, "dics_snum=$(snum).txt"), "w") do io
+    write(io, "DICs: $(dics) \n")
+  end
+  # Model comparisons
+  plot(2:6, dics, marker=:square, ms=8, label=nothing)
+  xlabel!("K")
+  ylabel!("DIC")
+  savefig(joinpath(imdir, "dic_snum=$(snum).pdf"))
+  closeall()
+end
 
-# Model comparisons
 
 # Send results to S3
-# Util.s3sync(from="$(Info.resultsdir_simstudy)/$(simname)",
-#             to="$(Info.awsbucket_simstudy)/$(simname)",
-#             tags=`--exclude '*.nfs'`)
+Util.s3sync(from="$(Info.resultsdir_simstudy)/$(simname)",
+            to="$(Info.awsbucket_simstudy)/$(simname)",
+            tags=`--exclude '*.nfs'`)

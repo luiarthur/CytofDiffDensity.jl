@@ -188,14 +188,14 @@ function combine_results(snum::Integer, K::Integer; p::Real=0.1)
 
   # Plot gamma
   plot(size=plotsize)
-  histogram!(gammaC, normalize=true, alpha=0.3, color=:blue)
-  histogram!(gammaT, normalize=true, alpha=0.3, color=:red)
+  histogram!(gammaC, normalize=true, alpha=0.3, la=0, label=nothing, color=:blue)
+  histogram!(gammaT, normalize=true, alpha=0.3, la=0, label=nothing, color=:red)
   savefig(joinpath(imgdir, "gamma.pdf"))
   closeall()
   
   # Plot Gtilde
   y = [r0.simdata.yC; r0.simdata.yT]
-  ygrid = range(quantile(y, .05), quantile(y, .95), length=100)
+  ygrid = cdd.make_ygrid(y)
   plot(size=plotsize)
   cdd.plot_post_density!(chain, ygrid)
   cdd.plot_simtruth(r0.simdata.mmC, r0.simdata.mmT, ygrid, label=nothing)
