@@ -1,0 +1,143 @@
+# TODO:
+# - [ ] use independent priors for mu (no ordering)
+
+ENV["GKSwstype"] = "nul"  # For StatsPlots
+
+import Pkg; Pkg.activate("../../../")
+include("../../info.jl")
+include("scenarios.jl")
+
+using CytofDiffDensity; const cdd = CytofDiffDensity
+using Util
+import Random
+using DrWatson
+using MCMC
+using BSON
+using Distributions  # required for `BSON.load`
+using StatsPlots
+using StatsFuns
+
+# Plot settings
+plotsize = (450, 450)
+Plots.scalefontsizes()
+Plots.scalefontsizes(1.5)
+
+simname = "v3"
+make_resultsdir(sim) = mkpath("$(Info.resultsdir_simstudy)/$(simname)/$(savename(sim))")
+
+function plot_simdata!(simdata; ygrid=nothing)
+  histogram!(simdata.yC, normalize=true, label=nothing, la=0, alpha=.3, color=:blue)
+  histogram!(simdata.yT, normalize=true, label=nothing, la=0, alpha=.3, color=:red)
+  ygrid === nothing && (ygrid = cdd.make_ygrid([simdata.yC; simdata.yT], 100))
+  plot!(ygrid, pdf.(simdata.mmC, ygrid), label=nothing, color=:blue)
+  plot!(ygrid, pdf.(simdata.mmT, ygrid), label=nothing, color=:red)
+end
+
+function run(sim)
+  sim = (; sim...)
+
+  # Simulate data.
+  simdata = scenarios(sim.snum, Ni=100000, seed=1)
+
+  # Make results dir if needed.
+  resultsdir = make_resultsdir(sim)
+
+  # Create Priors.
+  y = [simdata.yC; simdata.yT]
+
+  # Plot and save data
+  imgdir = mkpath(joinpath(resultsdir, "img"))
+  plot(size=plotsize)
+  plot_simdata!(simdata)
+  savefig(joinpath(imgdir, "data.pdf"))
+  closeall()
+
+  Random.seed!(0)
+  mu_prior = Normal(mean(y), std(y))  # independent priors for mu_k.
+  model = Gtilde(simdata.yC, simdata.yT, sim.K, true, mu=mu_prior)
+  exclude = [:vC, :vT, :zetaC, :zetaT, :lambdaC, :lambdaT]
+                 
+  init = MCMC.make_init_state(model)
+  spl = make_sampler(model, init=init)
+
+  nburn, nsamps, thin = (10000, 4000, 2)
+  callback = make_callback(model, nburn=nburn, nsamps=nsamps, thin=thin)
+
+  Util.redirect_stdout_to_file(joinpath(resultsdir, "log.txt")) do
+    # Run MCMC.
+    chain, metrics = mcmc(spl, nsamps, init=init, nburn=nburn, thin=thin,
+                          callback=callback, exclude=exclude);
+
+    # Save chain and metrics.
+    BSON.bson(joinpath(resultsdir, "results.bson"),
+              Dict(:chain => chain, :metrics => metrics, :simdata => simdata,
+                   :model => model))
+  end
+end
+
+function _postprocess(sim, resultsdir)
+  sim = (; sim...)
+
+  # Make image dir if needed.
+  imgdir = mkpath(joinpath(resultsdir, "img"))
+
+  # Load results.
+  # chain, metrics, simdata, model.
+  r = (; BSON.load(joinpath(resultsdir, "results.bson"))...)
+
+  # Print summary stats
+  cdd.printsummary(r.chain, r.metrics); println()
+
+  # Print model info
+  cdd.print_model_info(r.model)
+
+  # Plot loglike
+  plot(r.metrics[:loglike], label=nothing)
+  savefig(joinpath(imgdir, "loglike.pdf"))
+  closeall()
+
+  # Plot posterior for each multivariate parameter.
+  for sym in [:mu, :sigma, :nu, :phi, :etaC, :etaT]
+    p = hcat(getindex.(r.chain, sym)...)'
+
+    plot(p, label=nothing)
+    savefig(joinpath(imgdir, "$(sym)-trace.pdf"))
+    closeall()
+
+    boxplot(p, label=nothing)
+    savefig(joinpath(imgdir, "$(sym).pdf"))
+    closeall()
+  end
+
+  # Plot posterior for each univariate parameter.
+  for sym in [:tau]
+    p = vec(hcat(getindex.(r.chain, sym)...))
+
+    plot(p, label=nothing)
+    savefig(joinpath(imgdir, "$(sym)-trace.pdf"))
+    closeall()
+
+    histogram(p, label=nothing, normalize=true)
+    savefig(joinpath(imgdir, "$(sym).pdf"))
+    closeall()
+  end
+
+  # TODO: Plot posterior density for C and T.
+  y = [r.simdata.yC; r.simdata.yT]
+  ygrid = cdd.make_ygrid(y, 100)
+  plot(size=plotsize)
+  cdd.plot_post_density!(r.chain, ygrid)
+  cdd.plot_simtruth(r.simdata.mmC, r.simdata.mmT, ygrid, label=nothing)
+  savefig(joinpath(imgdir, "post-density.pdf"))
+  closeall()
+end
+
+
+function postprocess(sim)
+  # Make results dir if needed.
+  resultsdir = make_resultsdir(sim)
+
+  Util.redirect_stdout_to_file(joinpath(resultsdir, "info.txt")) do
+    _postprocess(sim, resultsdir)
+  end
+end
