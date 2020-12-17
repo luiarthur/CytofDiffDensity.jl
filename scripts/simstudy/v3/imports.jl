@@ -37,7 +37,7 @@ function run(sim)
   sim = (; sim...)
 
   # Simulate data.
-  simdata = scenarios(sim.snum, Ni=100000, seed=1)
+  simdata = scenarios(sim.snum, Ni=100_000, seed=1)
 
   # Make results dir if needed.
   resultsdir = make_resultsdir(sim)
@@ -54,7 +54,13 @@ function run(sim)
 
   Random.seed!(0)
   mu_prior = Normal(mean(y), std(y))  # independent priors for mu_k.
-  model = Gtilde(simdata.yC, simdata.yT, sim.K, true, mu=mu_prior)
+  if sim.skewtmix
+    # SkewT mixture
+    model = Gtilde(simdata.yC, simdata.yT, sim.K, true, mu=mu_prior, skew=true, tdist=true)
+  else
+    # Normal mixture
+    model = Gtilde(simdata.yC, simdata.yT, sim.K, true, mu=mu_prior, skew=false, tdist=false)
+  end
   exclude = [:vC, :vT, :zetaC, :zetaT, :lambdaC, :lambdaT]
                  
   init = MCMC.make_init_state(model)

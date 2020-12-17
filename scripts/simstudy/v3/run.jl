@@ -16,8 +16,9 @@ println("Finished loading libraries."); flush(stdout)
 
 Ks = collect(2:9)
 snums = collect(1:4)
+skewtmix = [true, false]
 
-sims = dict_list(Dict(:K => Ks, :snum => snums))
+sims = dict_list(Dict(:K => Ks, :snum => snums, :skewtmix => skewtmix))
 
 # Run simulations in parallel.
 @time res = pmap(run, sims, on_error=identity)
