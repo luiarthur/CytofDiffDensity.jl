@@ -66,7 +66,7 @@ function run(sim)
   init = MCMC.make_init_state(model)
   spl = make_sampler(model, init=init)
 
-  nburn, nsamps, thin = (10000, 4000, 2)
+  nburn, nsamps, thin = (15000, 4000, 2)
   callback = make_callback(model, nburn=nburn, nsamps=nsamps, thin=thin)
 
   Util.redirect_stdout_to_file(joinpath(resultsdir, "log.txt")) do
@@ -146,4 +146,10 @@ function postprocess(sim)
   Util.redirect_stdout_to_file(joinpath(resultsdir, "info.txt")) do
     _postprocess(sim, resultsdir)
   end
+end
+
+
+function parse_dic(model_info::String)
+  m = match(r"(?<=DIC:\s)\d+\.\d+", model_info).match
+  return parse(Float64, m)
 end

@@ -1,6 +1,6 @@
 # TODO:
-# - [ ] K=2,3,...,9
-# - [ ] compute DIC
+# - [X] K=2,3,...,9
+# - [X] compute DIC
 # - [ ] Estimate CDF of Fi for each sample
 
 println("Compile libraries on main processor..."); flush(stdout)
@@ -33,25 +33,28 @@ pp_res = pmap(postprocess, sims)
 # TODO: Combine results
 for snum in [1,2,3,4]
   imdir = mkpath(joinpath(Info.resultsdir_simstudy, simname, "img"))
-  dics = Float64[]
-  # FIXME: Plot DICs for each scenario.
-  # for K in MCMC.ProgressBar(Ks)
-  #   cr = combine_results(snum, K)
-  #   append!(dics, cr.dic)
-  # end
-  # open(joinpath(imdir, "dics_snum=$(snum).txt"), "w") do io
-  #   write(io, "DICs: $(dics) \n")
-  # end
-  # # Model comparisons
-  # plot(2:6, dics, marker=:square, ms=8, label=nothing)
-  # xlabel!("K")
-  # ylabel!("DIC")
-  # savefig(joinpath(imdir, "dic_snum=$(snum).pdf"))
-  # closeall()
+  plot(size=plotsize)
+  xlabel!("K")
+  ylabel!("DIC")
+  for stm in skewtmix
+    dics = Float64[]
+    for K in Ks
+      info_path = joinpath(Info.resultsdir_simstudy, simname,
+                           savename(Dict(:snum => snum, :K => K, :skewtmix => stm)),
+                           "info.txt")
+      model_info = open(f->read(f, String), info_path)
+      _dic = parse_dic(model_info)
+      append!(dics, _dic)
+    end
+    modelname = stm ? "Skew-t mixture" : "Normal mixture"
+    plot!(Ks, dics, marker=:square, ms=8, label=modelname, legend=:topright)
+  end
+  savefig(joinpath(imdir, "dic_snum=$(snum).pdf"))
+  closeall()
 end
 
 
 # Send results to S3
-# Util.s3sync(from="$(Info.resultsdir_simstudy)/$(simname)",
-#             to="$(Info.awsbucket_simstudy)/$(simname)",
-#             tags=`--exclude '*.nfs'`)
+Util.s3sync(from="$(Info.resultsdir_simstudy)/$(simname)",
+            to="$(Info.awsbucket_simstudy)/$(simname)",
+            tags=`--exclude '*.nfs'`)
