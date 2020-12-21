@@ -6,6 +6,7 @@ using MCMC: Bijectors
 using Random
 using StatsFuns
 using StatsPlots
+using LaTeXStrings
 
 export Gtilde, Pzero, infer
 export MixSkewT, OrderedNormalMeanPrior, update

@@ -64,3 +64,50 @@ function compute_log_bf(m::Pzero, nsamps::Int)
 
   return MCMC.log_bayes_factor(m0.loglike, m1.loglike)
 end
+
+function plot_gamma_uq!(gamma_mean::Real, gamma_lower::Real, gamma_upper::Real;
+                        color, Q, truth=nothing, alpha=.6)
+  if truth === nothing
+    # Plot empirical mean
+    vline!(Q, color=color, label=nothing, ls=:dash)
+  else
+    # Plot simulation truth
+    vline!(truth, color=color, label=nothing, ls=:dash)
+  end
+
+  # Plot posterior mean
+  vline!(gamma_mean, , color=color, alpha=alpha, label=nothing)
+
+  # 95% CI
+  vline!([gamma_lower, gamma_upper], color=color, label=nothing, ls=:dot, lw=2)
+
+  xlabel!(L"\gamma_i")
+  ylabel!("density")
+end
+
+function plot_gamma_uq!(gamma::Distribution; ci_level::Real=0.05, color, Q,
+                        truth=nothing, alpha=.6)
+  gamma_mean = mean(gamma)
+  gamma_lower = quantile(gamma, ci_level/2)
+  gamma_upper = quantile(gamma, 1 - ci_level/2)
+
+  plot_gamma_uq!(gamma_mean, gamma_lower, gamma_upper, color=color, Q=Q,
+                 truth=truth, alpha=alpha)
+end
+
+function plot_gamma_uq!(gamma::Union{Distribution, AbstractVector{<:Real}};
+                        color, Q, ci_level::Real=0.05, truth=nothing, alpha=.6)
+  gamma_mean = mean(gamma)
+  gamma_lower = quantile(gamma, ci_level/2)
+  gamma_upper = quantile(gamma, 1 - ci_level/2)
+  plot_gamma_uq!(gamma_mean, gamma_lower, gamma_upper, color=color, Q=Q,
+                 truth=truth, alpha=alpha)
+end
+
+
+function make_gamma_grid(gammaC_post::Distribution, gammaT_post::Distribution;
+                         a=0.01, grid_length=100)
+  gamma_lower = min(quantile(gammaC_post, a), quantile(gammaT_post, a))
+  gamma_upper = max(quantile(gammaC_post, 1-a), quantile(gammaT_post, 1-a))
+  return range(gamma_lower, gamma_upper, length=grid_length)
+end
