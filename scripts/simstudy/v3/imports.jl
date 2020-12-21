@@ -141,16 +141,18 @@ function _postprocess(sim, resultsdir)
   begin
     pzero = Pzero(NC=r.simdata.NC, NT=r.simdata.NT,
                   QC=r.simdata.QC, QT=r.simdata.QT)
-    pzero_inference = infer_Pzero1(pzero, 10000)
+    pzero_inference = cdd.infer_Pzero1(pzero, 10000)
     gammaC_post = pzero_inference.distC
     gammaT_post = pzero_inference.distT
-    gamma_grid = make_gamma_grid(gammaC_post, gammaT_post)
+    gamma_grid = cdd.make_gamma_grid(gammaC_post, gammaT_post, a=.001)
 
     plot(size=plotsize)
     plot!(gamma_grid, pdf.(gammaC_post, gamma_grid), label=nothing, color=:blue)
     plot!(gamma_grid, pdf.(gammaT_post, gamma_grid), label=nothing, color=:red)
-    cdd.plot_gamma_uq!(gammaC_post, color=:blue, Q=pzero.QC)
-    cdd.plot_gamma_uq!(gammaT_post, color=:red, Q=pzero.QT)
+    cdd.plot_gamma_uq!(gammaC_post, color=:blue, Q=pzero.QC, N=pzero.NC,
+                       truth=r.simdata.gammaC)
+    cdd.plot_gamma_uq!(gammaT_post, color=:red, Q=pzero.QT, N=pzero.NT,
+                       truth=r.simdata.gammaT)
     savefig(joinpath(imgdir, "gamma.pdf"))
     closeall()
   end

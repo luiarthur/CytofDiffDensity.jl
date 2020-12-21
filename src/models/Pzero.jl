@@ -66,42 +66,41 @@ function compute_log_bf(m::Pzero, nsamps::Int)
 end
 
 function plot_gamma_uq!(gamma_mean::Real, gamma_lower::Real, gamma_upper::Real;
-                        color, Q, truth=nothing, alpha=.6)
+                        color, Q::Int, N::Int, truth=nothing, alpha=.6,
+                        gamma_dist=nothing)
   if truth === nothing
     # Plot empirical mean
-    vline!(Q, color=color, label=nothing, ls=:dash)
+    vline!([Q / N], color=color, label=nothing, ls=:dash)
   else
     # Plot simulation truth
-    vline!(truth, color=color, label=nothing, ls=:dash)
+    vline!([truth], color=color, label=nothing, ls=:dash)
   end
 
   # Plot posterior mean
-  vline!(gamma_mean, , color=color, alpha=alpha, label=nothing)
+  vline!([gamma_mean], color=color, alpha=alpha, label=nothing)
 
   # 95% CI
-  vline!([gamma_lower, gamma_upper], color=color, label=nothing, ls=:dot, lw=2)
+  if gamma_dist !== nothing
+    grid = range(gamma_lower, gamma_upper, length=100)
+    plot!(grid, zero.(grid), fillrange=pdf.(gamma_dist, grid), color=color,
+          alpha=.3, label=nothing)
+  else
+    vline!([gamma_lower, gamma_upper], color=color, label=nothing, ls=:dot,
+           lw=2)
+  end
 
   xlabel!(L"\gamma_i")
   ylabel!("density")
 end
 
-function plot_gamma_uq!(gamma::Distribution; ci_level::Real=0.05, color, Q,
+function plot_gamma_uq!(gamma::Union{Distribution, AbstractVector{<:Real}};
+                        color, Q::Int, N::Int, ci_level::Real=0.05,
                         truth=nothing, alpha=.6)
   gamma_mean = mean(gamma)
   gamma_lower = quantile(gamma, ci_level/2)
   gamma_upper = quantile(gamma, 1 - ci_level/2)
-
-  plot_gamma_uq!(gamma_mean, gamma_lower, gamma_upper, color=color, Q=Q,
-                 truth=truth, alpha=alpha)
-end
-
-function plot_gamma_uq!(gamma::Union{Distribution, AbstractVector{<:Real}};
-                        color, Q, ci_level::Real=0.05, truth=nothing, alpha=.6)
-  gamma_mean = mean(gamma)
-  gamma_lower = quantile(gamma, ci_level/2)
-  gamma_upper = quantile(gamma, 1 - ci_level/2)
-  plot_gamma_uq!(gamma_mean, gamma_lower, gamma_upper, color=color, Q=Q,
-                 truth=truth, alpha=alpha)
+  plot_gamma_uq!(gamma_mean, gamma_lower, gamma_upper, color=color, Q=Q, N=N,
+                 truth=truth, alpha=alpha, gamma_dist=gamma)
 end
 
 
