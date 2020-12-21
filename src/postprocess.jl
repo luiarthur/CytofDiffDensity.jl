@@ -68,4 +68,8 @@ function plot_simtruth(dC, dT, ygrid; kwargs...)
 end
 
 
-
+# TODO: add methods for computing and plotting CDF of F_i
+function compute_Fi_tilde_cdf(chain::Vector{<:NamedTuple}) end
+function compute_Fi_tilde_cdf_truth(simdata::NamedTuple) end
+function plot_Fi_tilde_cdf(chain::Vector{<:NamedTuple}) end
+function plot_Fi_tilde_cdf_truth(simdata::NamedTuple) end
