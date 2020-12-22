@@ -13,6 +13,7 @@ import Random
 using DrWatson
 using MCMC
 using BSON
+using LaTeXStrings
 using Distributions  # required for `BSON.load`
 using StatsPlots
 using StatsFuns
@@ -154,6 +155,17 @@ function _postprocess(sim, resultsdir)
     cdd.plot_gamma_uq!(gammaT_post, color=:red, Q=pzero.QT, N=pzero.NT,
                        truth=r.simdata.gammaT)
     savefig(joinpath(imgdir, "gamma.pdf"))
+    closeall()
+  end
+
+  # Plot F̃ᵢ
+  begin 
+    plot(size=plotsize)
+    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero)
+    ylims!(0, 1)
+    xlabel!(L"\tilde{y}")
+    ylabel!("CDF")
+    savefig(joinpath(imgdir, "Fi-tilde-postmean.pdf"))
     closeall()
   end
 end

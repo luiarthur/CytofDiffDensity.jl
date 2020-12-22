@@ -1,5 +1,22 @@
 make_ygrid(y, ngrid=100) = range(minimum(y), maximum(y), length=ngrid)
 
+function postmean_cdf(chain::AbstractVector, ygrid)
+  pp = posterior_predictive(chain)
+  B = length(pp.C)
+  N = length(ygrid)
+  cdf_C = mean(map(p -> rand(p, N) .< ygrid, pp.C))
+  cdf_T = mean(map(p -> rand(p, N) .< ygrid, pp.T))
+  return (C=cdf_C, T=cdf_T)
+end
+
+function posterior_predictive(chain::AbstractVector)
+  function pp(c::NamedTuple, i::Symbol)
+    comps = SkewT.(c.mu, c.sigma, c.nu, c.phi) 
+    MixtureModel(comps, grab(c, :eta, i))
+  end
+  return (C=pp.(chain, :C), T=pp.(chain, :T))
+end
+
 function compute_post_density(chain::AbstractVector, ygrid)
   function compute_pdf(c::NamedTuple, i::Symbol)
     comps = SkewT.(c.mu, c.sigma, c.nu, c.phi) 
@@ -69,7 +86,30 @@ end
 
 
 # TODO: add methods for computing and plotting CDF of F_i
-function compute_Fi_tilde_cdf(chain::Vector{<:NamedTuple}) end
+function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
+                              pzero::Pzero; gridsize::Int=100)
+  gammaC_mean = mean(infer_Pzero1(pzero, 10000).distC)
+  gammaT_mean = mean(infer_Pzero1(pzero, 10000).distT)
+
+  ygrid = make_ygrid([gtilde.yC; gtilde.yT], gridsize)
+  cdfs = postmean_cdf(chain, ygrid)
+
+  cdfC = cdfs.C * (1 - gammaC_mean) .+ gammaC_mean
+  cdfT = cdfs.T * (1 - gammaT_mean) .+ gammaT_mean
+
+  # TODO: Compute area between curves.
+  area = sum(abs.(cdfC - cdfT) * (ygrid[2] - ygrid[1]))
+
+  return (C=cdfC, T=cdfT, ygrid=ygrid, area=area)
+end
+function plot_Fi_tilde_cdf!(gtilde::Gtilde, chain::AbstractVector,
+                            pzero::Pzero; gridsize::Int=100)
+  cdfs = compute_Fi_tilde_cdf(gtilde, chain, pzero, gridsize=gridsize)
+  plot!(cdfs.ygrid, cdfs.C, lw=2, color=:blue, label=nothing)
+  plot!(cdfs.ygrid, cdfs.T, lw=2, color=:red, label=nothing)
+
+  println("Area between curves: $(cdfs.area)")
+end
+
 function compute_Fi_tilde_cdf_truth(simdata::NamedTuple) end
-function plot_Fi_tilde_cdf(chain::Vector{<:NamedTuple}) end
-function plot_Fi_tilde_cdf_truth(simdata::NamedTuple) end
+function plot_Fi_tilde_cdf_truth!(simdata::NamedTuple) end
