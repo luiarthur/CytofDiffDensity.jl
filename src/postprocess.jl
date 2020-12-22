@@ -1,11 +1,16 @@
 make_ygrid(y, ngrid=100) = range(minimum(y), maximum(y), length=ngrid)
 
-function postmean_cdf(chain::AbstractVector, ygrid)
+function postmean_cdf(chain::AbstractVector, ygrid, exponentiate=false)
   pp = posterior_predictive(chain)
   B = length(pp.C)
   N = length(ygrid)
-  cdf_C = mean(map(p -> rand(p, N) .< ygrid, pp.C))
-  cdf_T = mean(map(p -> rand(p, N) .< ygrid, pp.T))
+  if exponentiate
+    cdf_C = mean(map(p -> exp.(rand(p, N)) .< ygrid, pp.C))
+    cdf_T = mean(map(p -> exp.(rand(p, N)) .< ygrid, pp.T))
+  else
+    cdf_C = mean(map(p -> rand(p, N) .< ygrid, pp.C))
+    cdf_T = mean(map(p -> rand(p, N) .< ygrid, pp.T))
+  end
   return (C=cdf_C, T=cdf_T)
 end
 
@@ -50,7 +55,6 @@ function printsummary(chain, metrics; digits=3)
 end
 
 
-# TODO: test
 function plot_post_density!(chain, ygrid; plot_mean=true, alpha=0.3)
   pdfC, pdfT = compute_post_density(chain, ygrid)
   pdfC = hcat(pdfC...)
@@ -85,26 +89,32 @@ function plot_simtruth(dC, dT, ygrid; kwargs...)
 end
 
 
-# TODO: add methods for computing and plotting CDF of F_i
+# Add methods for computing and plotting CDF of F_i
 function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
-                              pzero::Pzero; gridsize::Int=100)
+                              pzero::Pzero; gridsize::Int=100, exponentiate=false)
   gammaC_mean = mean(infer_Pzero1(pzero, 10000).distC)
   gammaT_mean = mean(infer_Pzero1(pzero, 10000).distT)
 
-  ygrid = make_ygrid([gtilde.yC; gtilde.yT], gridsize)
-  cdfs = postmean_cdf(chain, ygrid)
+  y = [gtilde.yC; gtilde.yT]
+  if exponentiate
+    ygrid = range(0, maximum(y), length=gridsize)
+  else
+    ygrid = make_ygrid(y, gridsize)
+  end
+  cdfs = postmean_cdf(chain, ygrid, exponentiate=exponentiate)
 
   cdfC = cdfs.C * (1 - gammaC_mean) .+ gammaC_mean
   cdfT = cdfs.T * (1 - gammaT_mean) .+ gammaT_mean
 
-  # TODO: Compute area between curves.
+  # Compute area between curves.
   area = sum(abs.(cdfC - cdfT) * (ygrid[2] - ygrid[1]))
 
   return (C=cdfC, T=cdfT, ygrid=ygrid, area=area)
 end
 function plot_Fi_tilde_cdf!(gtilde::Gtilde, chain::AbstractVector,
-                            pzero::Pzero; gridsize::Int=100)
-  cdfs = compute_Fi_tilde_cdf(gtilde, chain, pzero, gridsize=gridsize)
+                            pzero::Pzero; gridsize::Int=100, exponentiate=false)
+  cdfs = compute_Fi_tilde_cdf(gtilde, chain, pzero, gridsize=gridsize,
+                              exponentiate=exponentiate)
   plot!(cdfs.ygrid, cdfs.C, lw=2, color=:blue, label=nothing)
   plot!(cdfs.ygrid, cdfs.T, lw=2, color=:red, label=nothing)
 

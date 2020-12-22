@@ -157,12 +157,22 @@ function _postprocess(sim, resultsdir)
 
   # Plot F̃ᵢ
   begin 
+    # Plot Fi-tilde
     plot(size=plotsize)
     cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero)
     ylims!(0, 1)
     xlabel!(L"\tilde{y}")
     ylabel!("CDF")
     savefig(joinpath(imgdir, "Fi-tilde-postmean.pdf"))
+    closeall()
+
+    # Plot Fi
+    plot(size=plotsize)
+    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero, exponentiate=true)
+    ylims!(0, 1)
+    xlabel!("y")
+    ylabel!("CDF")
+    savefig(joinpath(imgdir, "Fi-postmean.pdf"))
     closeall()
   end
 end
