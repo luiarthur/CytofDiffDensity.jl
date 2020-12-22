@@ -1,8 +1,3 @@
-# TODO:
-# - [X] K=2,3,...,9
-# - [X] compute DIC
-# - [ ] Estimate CDF of Fi for each sample
-
 println("Compile libraries on main processor..."); flush(stdout)
 include("imports.jl")
 println("Finished loading libraries."); flush(stdout)
@@ -30,7 +25,6 @@ foreach(z -> println("$(z[1]) => $(z[2])"), zip(sims, res))
 pp_res = pmap(postprocess, sims)
 # postprocess(Dict(:beta=>1, :K=>5, :snum=>1))
 
-# TODO: Combine results
 for snum in [1,2,3,4]
   imdir = mkpath(joinpath(Info.resultsdir_simstudy, simname, "img"))
   plot(size=plotsize)

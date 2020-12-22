@@ -1,6 +1,3 @@
-# TODO:
-# - [ ] use independent priors for mu (no ordering)
-
 ENV["GKSwstype"] = "nul"  # For StatsPlots
 
 import Pkg; Pkg.activate("../../../")
