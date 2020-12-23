@@ -1,6 +1,6 @@
 make_ygrid(y, ngrid=100) = range(minimum(y), maximum(y), length=ngrid)
 
-function postmean_cdf(chain::AbstractVector, ygrid, exponentiate=false)
+function postmean_cdf(chain::AbstractVector, ygrid; exponentiate=false)
   pp = posterior_predictive(chain)
   B = length(pp.C)
   N = length(ygrid)
@@ -91,13 +91,14 @@ end
 
 # Add methods for computing and plotting CDF of F_i
 function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
-                              pzero::Pzero; gridsize::Int=100, exponentiate=false)
+                              pzero::Pzero; gridsize::Int=100, 
+                              exponentiate=false)
   gammaC_mean = mean(infer_Pzero1(pzero, 10000).distC)
   gammaT_mean = mean(infer_Pzero1(pzero, 10000).distT)
 
   y = [gtilde.yC; gtilde.yT]
   if exponentiate
-    ygrid = range(0, maximum(y), length=gridsize)
+    ygrid = range(0, exp(quantile(y, .999)), length=gridsize)
   else
     ygrid = make_ygrid(y, gridsize)
   end
@@ -112,13 +113,13 @@ function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
   return (C=cdfC, T=cdfT, ygrid=ygrid, area=area)
 end
 function plot_Fi_tilde_cdf!(gtilde::Gtilde, chain::AbstractVector,
-                            pzero::Pzero; gridsize::Int=100, exponentiate=false)
+                            pzero::Pzero; gridsize::Int=200, exponentiate=false)
   cdfs = compute_Fi_tilde_cdf(gtilde, chain, pzero, gridsize=gridsize,
                               exponentiate=exponentiate)
   plot!(cdfs.ygrid, cdfs.C, lw=2, color=:blue, label=nothing)
   plot!(cdfs.ygrid, cdfs.T, lw=2, color=:red, label=nothing)
 
-  println("Area between curves: $(cdfs.area)")
+  println("Area between curves: $(cdfs.area) (exponentiate=$(exponentiate))")
 end
 
 function compute_Fi_tilde_cdf_truth(simdata::NamedTuple) end
