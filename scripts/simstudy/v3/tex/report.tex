@@ -1,0 +1,222 @@
+\documentclass[12pt]{article} % 12-point font
+
+\usepackage[margin=1in]{geometry} % set page to 1-inch margins
+\usepackage{bm}
+\usepackage{amsmath} % for math
+\usepackage{amssymb} % like \Rightarrow
+\setlength\parindent{0pt} % Suppresses the indentation of new paragraphs.
+
+% Big display
+\newcommand{\ds}{\displaystyle}
+% Parenthesis
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\p}[1]{\left(#1\right)}
+\newcommand{\bk}[1]{\left[#1\right]}
+\newcommand{\bc}[1]{\left\{#1\right\}}
+\newcommand{\abs}[1]{\left|#1\right|}
+% Derivatives
+\newcommand{\df}[2]{\frac{d#1}{d#2}}
+\newcommand{\ddf}[2]{\frac{d^2#1}{d{#2}^2}}
+\newcommand{\pd}[2]{\frac{\partial#1}{\partial#2}}
+\newcommand{\pdd}[2]{\frac{\partial^2#1}{\partial{#2}^2}}
+% Distributions
+\newcommand{\Bernoulli}{\text{Bernoulli}}
+\newcommand{\Beta}{\text{Beta}}
+\newcommand{\Binomial}{\text{Binomial}}
+\newcommand{\Categorical}{\text{Categorical}}
+\newcommand{\Dirichlet}{\text{Dirichlet}}
+\newcommand{\G}{\text{Gamma}}
+\newcommand{\InvGamma}{\text{Inv-Gamma}}
+\newcommand{\LogNormal}{\text{LogNormal}}
+\newcommand{\Normal}{\text{Normal}}
+\newcommand{\MvNormal}{\text{MvNormal}}
+\newcommand{\Uniform}{\text{Uniform}}
+\newcommand{\SkewT}{\mathcal{ST}}
+\newcommand{\TruncatedNormal}{\text{TruncatedNormal}}
+% Statistics
+\newcommand{\E}{\text{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\iid}{\overset{iid}{\sim}}
+\newcommand{\ind}{\overset{ind}{\sim}}
+\newcommand{\Ind}[1]{\mathbf{1}\bc{#1}}
+\newcommand{\logistic}{\text{logistic}}
+\newcommand{\logit}{\text{logit}}
+
+% Graphics
+\usepackage{graphicx}  % for figures
+\usepackage{float} % Put figure exactly where I want [H]
+
+% Colors
+\usepackage[dvipsnames]{xcolor}
+\newcommand{\alert}[1]{\color{red}#1 \color{black}}
+\newcommand{\todo}[1]{\color{blue}#1 \color{black}}
+\newcommand{\edited}[1]{\color{green}#1 \color{black}}
+
+% This project
+\newcommand{\true}{\text{TRUE}}
+
+% Uncomment if using bibliography
+% Bibliography
+% \usepackage{natbib}
+% \bibliographystyle{plainnat}
+
+% Adds settings for hyperlinks. (Mainly for table of contents.)
+\usepackage{hyperref}
+\hypersetup{
+  pdfborder={0 0 0} % removes red box from links
+}
+
+% Title Settings
+\title{Simulation Study}
+\author{Arthur Lui}
+\date{\today} % \date{} to set date to empty
+
+% MAIN %
+\begin{document}
+
+\maketitle
+
+\section{Simulation Study}
+We assessed our model through the following simulation study. We first
+generated four data sets (I, II, III, IV) according to our model.
+Table~\ref{tab:sim-truth} contains the simulation truth of the model
+parameters under the four scenarios. Figure~\ref{fig:sim-truth-density}
+contains the histogram of the observed data and the true density of the data
+in each scenario. The figures also list the observed proportion of zeros in
+the datasets. Note that in scenarios I and II, the densities of the
+simulation truths are visibly different, while the true proportions of zeros
+are the same in both samples. In scenario III, the densities of the two
+samples are the same, but the true probabilities of observing zeros differ.
+In scenario IV, the densities and probabilities of observing of zeros are
+identical in the simulation truth. In each scenario, $N_i=100000$.
+$K^\true=4$ for Scenarios 2,3,4; while $K^\true=3$ for Scenario 1. These
+scenarios were created to imitate real data we will next analyze. \\
+
+The following priors were used in this analysis. First, we set $K$ to be a
+value ine $\bc{2,3,\dots,9}$. Then $\gamma_i\sim\Beta(1, 1)$,
+$\bm\eta_i\sim\Dirichlet_K(1/K)$, $\mu_k\sim\Normal(\bar{\mu}, s_\mu^2)$,
+$\tau\sim\G(0.5,\text{rate}=1)$, $\omega_k\mid\tau\sim\InvGamma(2.5, \tau)$,
+$\nu_k\sim\LogNormal(3, 0.5)$, $\psi_k\sim\Normal(-1, 0.5)$, where,
+respectively, $\bar{\mu}$ and $s_\mu$ are the empirical mean and standard
+deviation of the data for which $y_{i,n} > 0$. Posterior inference was done
+via Gibbs sampling, with a 20000-iteration burn-in, and the next 8000
+samples thinned by every other sample collected to yield 4000 samples for
+downstream analysis.
+
+\begin{table}[t!]
+  \centering
+  \begin{tabular}{|c|cccc|}
+    \hline 
+    & Scenario I & Scenario II & Scenario III & Scenario IV \\
+    \hline 
+    $\gamma_C$  & 0.1 & 0.1 & 0.1 & 0.15 \\
+    $\gamma_T$  & 0.1 & 0.1 & 0.2 & 0.15 \\
+    $\bm\eta_C$ & (0.25,0.75,0) & (0.1,0.1,0.5,0.3) & (0.05,0.05,0.5,0.4) & (0.05,0.05,0.5,0.4) \\
+    $\bm\eta_T$ & (0.1,0.1,0.8) & (0.1,0.1,0.8,0) & (0.05,0.05,0.5,0.4) & (0.05,0.05,0.5,0.4) \\
+    $\bm\mu$    & (-1.5,3.5,5.1,5) & (-1.5,3.5,1.5,4.3) & (-1.5,3.5,5.1,4.3) & (-1.5,3.5,5.1,4.3) \\
+    $\bm\sigma$ & (1.6,1.76,1.76,1.6) & (1.6,1.76,1.76,1.6) & (1.6,1.76,1.76,1.6) & (1.6,1.76,1.76,1.6) \\
+    $\bm\nu$    & (12,10,10,15) & (12,10,10,15) & (12,10,10,15) & (12,10,10,15) \\
+    $\bm\phi$   & (0,-10,-10,0) & (12,10,10,-11) & (0,-10,-10,-11) & (0,-10,-10,-11) \\
+    \hline
+  \end{tabular}
+  \caption{Simulation truth of model parameters under the four scenarios.}
+  \label{tab:sim-truth}
+\end{table}
+
+\begin{figure}[t!]
+  \centering
+  \begin{tabular}{cc}
+    (a) Scenario I & (b) Scenario II \\
+    \includegraphics[scale=0.5]{results/K=4_skewtmix=true_snum=1/img/data.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_skewtmix=true_snum=2/img/data.pdf} \\
+    (c) Scenario III & (d) Scenario IV \\
+    \includegraphics[scale=0.5]{results/K=4_skewtmix=true_snum=3/img/data.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_skewtmix=true_snum=4/img/data.pdf}
+  \end{tabular}
+  \caption{Histograms of simulated data (from $\tilde G_i$) and simulation truth density.}
+  \label{fig:sim-truth-density}
+\end{figure}
+
+
+% DICs
+\begin{figure}
+  \centering
+  \begin{tabular}{cc}
+    (a) Scenario 1 & (b) Scenario 2 \\
+    \includegraphics[scale=.5]{results/img/dic_snum=1.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_snum=2.pdf} \\
+    (c) Scenario 3 & (d) Scenario 4 \\
+    \includegraphics[scale=.5]{results/img/dic_snum=3.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_snum=4.pdf}
+  \end{tabular}
+  \caption{DICs for simulation scenarios for various $K$.}
+  \label{fig:sim-study-dics}
+\end{figure}
+
+% G-tilde skewt mix
+\begin{figure}
+  \centering
+  \begin{tabular}{cc}
+    (a) Scenario 1, $K=5$, Skew-$t$ mixture & (b) Scenario 2, $K=4$, Skew-$t$ mixture \\
+    \includegraphics[scale=.5]{results/K=5_skewtmix=true_snum=1/img/post-density.pdf} &
+    \includegraphics[scale=.5]{results/K=4_skewtmix=true_snum=2/img/post-density.pdf} \\
+    (c) Scenario 3, $K=6$, Skew-$t$ mixture & (d) Scenario 4, $K=5$, Skew-$t$ mixture \\
+    \includegraphics[scale=.5]{results/K=6_skewtmix=true_snum=3/img/post-density.pdf} &
+    \includegraphics[scale=.5]{results/K=5_skewtmix=true_snum=4/img/post-density.pdf} \\
+  \end{tabular}
+  \caption{$\tilde{G}_i$ for best $K$ for skew-$t$ mixture in each scenario.}
+  \label{fig:sim-study-gtilde-skewt-mix}
+\end{figure}
+
+% G-tilde normal mix
+\begin{figure}
+  \centering
+  \begin{tabular}{cc}
+    (a) Scenario 1, $K=6$, Normal mixture & (b) Scenario 2, $K=7$, Normal mixture \\
+    \includegraphics[scale=.5]{results/K=6_skewtmix=false_snum=1/img/post-density.pdf} &
+    \includegraphics[scale=.5]{results/K=7_skewtmix=false_snum=2/img/post-density.pdf} \\
+    (c) Scenario 3, $K=6$, Normal mixture & (d) Scenario 4, $K=6$, Normal mixture \\
+    \includegraphics[scale=.5]{results/K=6_skewtmix=false_snum=3/img/post-density.pdf} &
+    \includegraphics[scale=.5]{results/K=6_skewtmix=false_snum=4/img/post-density.pdf} \\
+  \end{tabular}
+  \caption{$\tilde{G}_i$ for best $K$ for Normal mixture in each scenario.}
+  \label{fig:sim-study-gtilde-normal-mix}
+\end{figure}
+
+% CDFs (F)
+\begin{figure}
+  \centering
+  \begin{tabular}{cc}
+    (a) Scenario 1, $K=5$, Skew-$t$ mixture & (b) Scenario 2, $K=4$, Skew-$t$ mixture \\
+    \includegraphics[scale=.5]{results/K=5_skewtmix=true_snum=1/img/Fi-postmean.pdf} &
+    \includegraphics[scale=.5]{results/K=4_skewtmix=true_snum=2/img/Fi-postmean.pdf} \\
+    (c) Scenario 3, $K=6$, Skew-$t$ mixture & (d) Scenario 4, $K=5$, Skew-$t$ mixture \\
+    \includegraphics[scale=.5]{results/K=6_skewtmix=true_snum=3/img/Fi-postmean.pdf} &
+    \includegraphics[scale=.5]{results/K=5_skewtmix=true_snum=4/img/Fi-postmean.pdf} \\
+  \end{tabular}
+  \caption{$F_i$ for best $K$ for skew-$t$ mixture in each scenario. Area between
+  the two curves are (a) 35.72, (b) 8.247, (c) 4.380, (d) 0.9633.}
+  \label{fig:sim-study-Fi-cdf-skewt-mix}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \begin{tabular}{cc}
+    (a) Scenario 1, $K=6$, Normal mixture & (b) Scenario 2, $K=7$, Normal mixture \\
+    \includegraphics[scale=.5]{results/K=6_skewtmix=false_snum=1/img/Fi-postmean.pdf} &
+    \includegraphics[scale=.5]{results/K=7_skewtmix=false_snum=2/img/Fi-postmean.pdf} \\
+    (c) Scenario 3, $K=6$, Normal mixture & (d) Scenario 4, $K=6$, Normal mixture \\
+    \includegraphics[scale=.5]{results/K=6_skewtmix=false_snum=3/img/Fi-postmean.pdf} &
+    \includegraphics[scale=.5]{results/K=6_skewtmix=false_snum=4/img/Fi-postmean.pdf} \\
+  \end{tabular}
+  \caption{$F_i$ for best $K$ for Normal mixture in each scenario. Area
+  between the two curves are (a) 35.54, (b) 8.259, (c) 4.529, (d) 0.9159.}
+  \label{fig:sim-study-Fi-cdf-normal-mix}
+\end{figure}
+
+
+
+% Uncomment if using bibliography:
+% \bibliography{bib}
+\end{document}
