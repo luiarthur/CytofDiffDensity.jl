@@ -118,6 +118,9 @@ function _postprocess(sim, resultsdir)
   # Print summary stats
   cdd.printsummary(r.chain, r.metrics); println()
 
+  # Print data info
+  foreach(s -> println(s, ": ", getindex(r.data, s)), [:QC, :QT, :NC, :NT])
+
   # Print model info
   cdd.print_model_info(r.model)
 
