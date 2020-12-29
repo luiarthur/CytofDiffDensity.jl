@@ -21,7 +21,7 @@ sims = dict_list(Dict(:K => Ks, :marker => markers, :skewtmix => skewtmix))
 foreach(z -> println("$(z[1]) => $(z[2])"), zip(sims, res))
 
 # Post process
-pp_res = pmap(postprocess, sims)
+@time pp_res = pmap(postprocess, sims)
 
 # Combine results, plot DIC.
 for marker in markers
@@ -40,7 +40,11 @@ for marker in markers
       append!(dics, _dic)
     end
     modelname = stm ? "Skew-t mixture" : "Normal mixture"
-    plot!(Ks, dics, marker=:square, ms=8, label=modelname, legend=:topright)
+
+    # FIXME: This was hardcoded...
+    pos = marker in (:LAG3, ) ? :bottomleft : :topright
+
+    plot!(Ks, dics, marker=:square, ms=8, label=modelname, legend=pos)
   end
   savefig(joinpath(imdir, "dic_marker=$(marker).pdf"))
   closeall()

@@ -159,7 +159,7 @@ function _postprocess(sim, resultsdir)
   begin 
     # Plot Fi-tilde
     plot(size=plotsize)
-    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero)
+    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero, N=2000)
     ylims!(0, 1)
     xlabel!(L"\tilde{y}")
     ylabel!("CDF")
@@ -168,7 +168,7 @@ function _postprocess(sim, resultsdir)
 
     # Plot Fi
     plot(size=plotsize)
-    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero, exponentiate=true)
+    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero, exponentiate=true, N=2000)
     ylims!(0, 1)
     xlabel!("y")
     ylabel!("CDF")

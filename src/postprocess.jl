@@ -1,15 +1,17 @@
 make_ygrid(y, ngrid=100) = range(minimum(y), maximum(y), length=ngrid)
 
-function postmean_cdf(chain::AbstractVector, ygrid; exponentiate=false)
+_ecdf(xs::AbstractArray{<:Real}, ys::AbstractArray{<:Real}) = ecdf(xs).(ys)
+
+function postmean_cdf(chain::AbstractVector, ygrid; exponentiate=false,
+                      N=10000)
   pp = posterior_predictive(chain)
   B = length(pp.C)
-  N = length(ygrid)
   if exponentiate
-    cdf_C = mean(map(p -> exp.(rand(p, N)) .< ygrid, pp.C))
-    cdf_T = mean(map(p -> exp.(rand(p, N)) .< ygrid, pp.T))
+    cdf_C = mean(map(p -> _ecdf(exp.(rand(p, N)), ygrid), pp.C))
+    cdf_T = mean(map(p -> _ecdf(exp.(rand(p, N)), ygrid), pp.T))
   else
-    cdf_C = mean(map(p -> rand(p, N) .< ygrid, pp.C))
-    cdf_T = mean(map(p -> rand(p, N) .< ygrid, pp.T))
+    cdf_C = mean(map(p -> _ecdf(rand(p, N), ygrid), pp.C))
+    cdf_T = mean(map(p -> _ecdf(rand(p, N), ygrid), pp.T))
   end
   return (C=cdf_C, T=cdf_T)
 end
@@ -92,7 +94,7 @@ end
 # Add methods for computing and plotting CDF of F_i
 function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
                               pzero::Pzero; gridsize::Int=100, 
-                              exponentiate=false)
+                              exponentiate=false, N::Integer=10000)
   gammaC_mean = mean(infer_Pzero1(pzero, 10000).distC)
   gammaT_mean = mean(infer_Pzero1(pzero, 10000).distT)
 
@@ -102,7 +104,7 @@ function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
   else
     ygrid = make_ygrid(y, gridsize)
   end
-  cdfs = postmean_cdf(chain, ygrid, exponentiate=exponentiate)
+  cdfs = postmean_cdf(chain, ygrid, exponentiate=exponentiate, N=N)
 
   cdfC = cdfs.C * (1 - gammaC_mean) .+ gammaC_mean
   cdfT = cdfs.T * (1 - gammaT_mean) .+ gammaT_mean
@@ -113,9 +115,10 @@ function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
   return (C=cdfC, T=cdfT, ygrid=ygrid, area=area)
 end
 function plot_Fi_tilde_cdf!(gtilde::Gtilde, chain::AbstractVector,
-                            pzero::Pzero; gridsize::Int=200, exponentiate=false)
+                            pzero::Pzero; gridsize::Int=200,
+                            exponentiate=false, N=10000)
   cdfs = compute_Fi_tilde_cdf(gtilde, chain, pzero, gridsize=gridsize,
-                              exponentiate=exponentiate)
+                              exponentiate=exponentiate, N=N)
   plot!(cdfs.ygrid, cdfs.C, lw=2, color=:blue, label=nothing)
   plot!(cdfs.ygrid, cdfs.T, lw=2, color=:red, label=nothing)
 

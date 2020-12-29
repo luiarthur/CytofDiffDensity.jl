@@ -119,7 +119,9 @@ function _postprocess(sim, resultsdir)
   cdd.printsummary(r.chain, r.metrics); println()
 
   # Print data info
+  println("Data info:")
   foreach(s -> println(s, ": ", getindex(r.data, s)), [:QC, :QT, :NC, :NT])
+  println()
 
   # Print model info
   cdd.print_model_info(r.model)
@@ -186,7 +188,7 @@ function _postprocess(sim, resultsdir)
   begin 
     # Plot Fi-tilde
     plot(size=plotsize)
-    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero)
+    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero, N=2000)
     ylims!(0, 1)
     xlabel!(L"\tilde{y}")
     ylabel!("CDF")
@@ -195,7 +197,7 @@ function _postprocess(sim, resultsdir)
 
     # Plot Fi
     plot(size=plotsize)
-    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero, exponentiate=true)
+    cdd.plot_Fi_tilde_cdf!(r.model, r.chain, pzero, exponentiate=true, N=2000)
     ylims!(0, 1)
     xlabel!("y")
     ylabel!("CDF")

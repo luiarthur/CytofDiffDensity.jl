@@ -1,6 +1,7 @@
 module CytofDiffDensity
 
 using Distributions
+import Distributions.StatsBase: ecdf
 using MCMC
 using MCMC: Bijectors
 using Random
