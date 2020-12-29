@@ -183,6 +183,15 @@ downstream analysis.
   \label{fig:sim-study-gtilde-normal-mix}
 \end{figure}
 
+Figures~\ref{fig:sim-study-Fi-cdf-skewt-mix}-\ref{fig:sim-study-Fi-cdf-normal-mix}
+were created as follows. For each posterior sample of
+$(\bm\mu,\bm\sigma,\bm\nu,\bm\phi,\bm\eta_C,\bm\eta_T)$, $L=2000$
+samples are drawn from the mixtures $\sum_{k=1}^K \SkewT(\cdot \mid
+\mu_k,\sigma_k,\nu_k,\phi_k) \cdot \eta_i$, for $i \in \bc{C,T}$, and then
+exponentiated. The resulting empirical cumulative distribution functions (ECDF) of the 
+exponentiated samples evaluated over an evenly-spaced grid of 100 values from 0
+to the 0.999 quantile are then computed. The ECDFs are averaged (point-wise
+at each grid point) over all posterior samples to yield the figures.
 % CDFs (F)
 \begin{figure}
   \centering
