@@ -4,6 +4,7 @@
 \usepackage{bm}
 \usepackage{amsmath} % for math
 \usepackage{amssymb} % like \Rightarrow
+\usepackage{caption}
 \setlength\parindent{0pt} % Suppresses the indentation of new paragraphs.
 
 % Big display
@@ -47,10 +48,10 @@
 \usepackage{float} % Put figure exactly where I want [H]
 
 % Colors
-% \usepackage[dvipsnames]{xcolor}
-% \newcommand{\alert}[1]{\color{red}#1 \color{black}}
-% \newcommand{\todo}[1]{\color{blue}#1 \color{black}}
-% \newcommand{\edited}[1]{\color{green}#1 \color{black}}
+\usepackage[dvipsnames]{xcolor}
+\newcommand{\alert}[1]{\color{red}#1 \color{black}}
+\newcommand{\todo}[1]{\color{blue}#1 \color{black}}
+\newcommand{\edited}[1]{\color{green}#1 \color{black}}
 
 % Uncomment if using bibliography
 % Bibliography
@@ -75,10 +76,8 @@
 
 \section{TO DO}
 \begin{itemize}
-  \item Make a table with the following info:
+  \item MCMC info
   \begin{itemize}
-    \item Markers analyzed
-    \item Data size ($N_i, Q_i$)
     \item burning iterations (30000)
     \item number of samples (4000)
     \item thinning factor (2)
@@ -87,17 +86,170 @@
   \item Create the following graphs for the best model for each marker:
   \begin{itemize}
     \item $F_i$
-    \item $\tilde F_i$
     \item posterior density of $\tilde G_i$
   \end{itemize}
   \item Fix graphs where the legend covers the graph. 
 \end{itemize}
 
+\begin{table}[!t]
+  \centering
+  \begin{tabular}{|c|rrrr|}
+    \hline
+    Marker & $N_C$ & $N_T$ & $Q_C$ & $Q_T$ \\ 
+    \hline
+    CD3z       & 86915 & 92468 &  1361 &   411 \\ 
+    CD56       & 86915 & 92468 &     0 &     0 \\ 
+    CD57       & 86915 & 92468 & 85919 & 91429 \\ 
+    EOMES      & 86915 & 92468 &  8374 &  7369 \\ 
+    Granzyme A & 86915 & 92468 &    27 &    82 \\ 
+    LAG3       & 86915 & 92468 & 57867 & 65782 \\ 
+    Perforin   & 86915 & 92468 &    90 &   911 \\ 
+    Siglec7    & 86915 & 92468 &  5759 &  4601 \\
+    \hline
+  \end{tabular} 
+  \caption{Counts of the number of cells in donor sample before ($N_C$) and
+  after ($N_T$) treatment. $Q_C$ and $Q_T$ respectively denote the number
+  of zeros in the measurements before and after treatment.}
+  \label{tab:data-counts}
+\end{table}
+
+
 \section{Setup}\label{sec:data-analysis-setup} % add labels to refer to other sections easily
 TODO
 
 \section{Results}\label{sec:data-analysis-results} % add labels to refer to other sections easily
-TODO
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (a) CD3z & (b) CD56 \\
+    \includegraphics[scale=.5]{results/img/dic_marker=CD3z.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_marker=CD56.pdf} \\
+    (c) CD57 & (d) EOMES \\
+    \includegraphics[scale=.5]{results/img/dic_marker=CD57.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_marker=EOMES.pdf} \\
+  \end{tabular}
+  \caption{DICs for various markers and $K$.}
+  \label{fig:data-study-dics-1}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (e) Granzyme A & (f) LAG3 \\
+    \includegraphics[scale=.5]{results/img/dic_marker=Granzyme_A.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_marker=LAG3.pdf} \\
+    (g) Perforin & (h) Siglec7 \\
+    \includegraphics[scale=.5]{results/img/dic_marker=Perforin.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_marker=Siglec7.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-dics-1} continued: DICs for various
+  markers and $K$. \alert{in (f), one of the $\sigma_k$'s approached 0,
+  leading to strange patterns in the DIC. The corresponding $\eta_{i,k}$ was
+  small, but the log-likelihood was deceptively large because of the small
+  $\sigma$.}}
+  \label{fig:data-study-dics-2}
+\end{figure}
+
+
+% Gi
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (a) CD3z (Skew-t mixture ($K=5$)) & (b) CD3z (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=false/img/post-density.pdf} \\
+    (c) CD56 (Skew-t mixture ($K=5$)) & (d) CD56 (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=false/img/post-density.pdf} \\
+  \end{tabular}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (e) CD57 (Skew-t mixture ($K=4$)) & (f) CD57 (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=CD57_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=CD57_skewtmix=false/img/post-density.pdf} \\
+    (g) EOMES (Skew-t mixture ($K=3$)) & (h) EOMES (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=EOMES_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=EOMES_skewtmix=false/img/post-density.pdf} \\
+  \end{tabular}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (i) Granzyme A (Skew-t mixture ($K=5$)) & (j) Granzyme A (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=false/img/post-density.pdf} \\
+    (k) LAG3 (Skew-t mixture ($K=8$)) & (l) LAG3 (Normal mixture ($K=7$)) \\
+    \includegraphics[scale=0.5]{results/K=8_marker=LAG3_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=7_marker=LAG3_skewtmix=false/img/post-density.pdf} \\
+  \end{tabular}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (m) Perforin (Skew-t mixture ($K=4$)) & (n) Perforin (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=false/img/post-density.pdf} \\
+    (o) Siglec7 (Skew-t mixture ($K=4$)) & (p) Siglec7 (Normal mixture ($K=7$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=Siglec7_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=7_marker=Siglec7_skewtmix=false/img/post-density.pdf} \\
+  \end{tabular}
+\end{figure}
+
+% Fi. TODO: add areas.
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (a) CD3z (Skew-t mixture ($K=5$)) & (b) CD3z (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=false/img/Fi-postmean.pdf} \\
+    (c) CD56 (Skew-t mixture ($K=5$)) & (d) CD56 (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=false/img/Fi-postmean.pdf} \\
+  \end{tabular}
+  \caption{Areas between curves: (a) 36.75, (b) 36.68,(c) 14.69, (d) 14.19.}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (e) CD57 (Skew-t mixture ($K=4$)) & (f) CD57 (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=CD57_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=CD57_skewtmix=false/img/Fi-postmean.pdf} \\
+    (g) EOMES (Skew-t mixture ($K=3$)) & (h) EOMES (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=EOMES_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=EOMES_skewtmix=false/img/Fi-postmean.pdf} \\
+  \end{tabular}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (i) Granzyme A (Skew-t mixture ($K=5$)) & (j) Granzyme A (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=false/img/Fi-postmean.pdf} \\
+    (k) LAG3 (Skew-t mixture ($K=8$)) & (l) LAG3 (Normal mixture ($K=7$)) \\
+    \includegraphics[scale=0.5]{results/K=8_marker=LAG3_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=7_marker=LAG3_skewtmix=false/img/Fi-postmean.pdf} \\
+  \end{tabular}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (m) Perforin (Skew-t mixture ($K=4$)) & (n) Perforin (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=false/img/Fi-postmean.pdf} \\
+    (o) Siglec7 (Skew-t mixture ($K=4$)) & (p) Siglec7 (Normal mixture ($K=7$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=Siglec7_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=7_marker=Siglec7_skewtmix=false/img/Fi-postmean.pdf} \\
+  \end{tabular}
+\end{figure}
 
 
 % Uncomment if using bibliography:
