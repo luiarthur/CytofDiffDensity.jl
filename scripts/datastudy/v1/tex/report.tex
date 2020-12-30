@@ -93,18 +93,18 @@
 
 \begin{table}[!t]
   \centering
-  \begin{tabular}{|c|rrrr|}
+  \begin{tabular}{|c|rrrrrr|}
     \hline
-    Marker & $N_C$ & $N_T$ & $Q_C$ & $Q_T$ \\ 
+    Marker & $N_C$ & $N_T$ & $Q_C$ & $Q_T$ & $N_C - Q_C$ & $N_T - Q_T$ \\ 
     \hline
-    CD3z       & 86915 & 92468 &  1361 &   411 \\ 
-    CD56       & 86915 & 92468 &     0 &     0 \\ 
-    CD57       & 86915 & 92468 & 85919 & 91429 \\ 
-    EOMES      & 86915 & 92468 &  8374 &  7369 \\ 
-    Granzyme A & 86915 & 92468 &    27 &    82 \\ 
-    LAG3       & 86915 & 92468 & 57867 & 65782 \\ 
-    Perforin   & 86915 & 92468 &    90 &   911 \\ 
-    Siglec7    & 86915 & 92468 &  5759 &  4601 \\
+    CD3z       & 86915 & 92468 &  1361 &   411 & 85554 & 92057 \\ 
+    CD56       & 86915 & 92468 &     0 &     0 & 86915 & 92468 \\ 
+    CD57       & 86915 & 92468 & 85919 & 91429 &   996 &  1039 \\ 
+    EOMES      & 86915 & 92468 &  8374 &  7369 & 78541 & 85099 \\ 
+    Granzyme A & 86915 & 92468 &    27 &    82 & 86888 & 92386 \\ 
+    LAG3       & 86915 & 92468 & 57867 & 65782 & 29048 & 26686 \\ 
+    Perforin   & 86915 & 92468 &    90 &   911 & 86825 & 91557 \\ 
+    Siglec7    & 86915 & 92468 &  5759 &  4601 & 81156 & 87867 \\
     \hline
   \end{tabular} 
   \caption{Counts of the number of cells in donor sample before ($N_C$) and
@@ -119,6 +119,7 @@ TODO
 
 \section{Results}\label{sec:data-analysis-results} % add labels to refer to other sections easily
 
+% DIC
 \begin{figure}[!t]
   \centering
   \begin{tabular}{cc}
@@ -129,7 +130,10 @@ TODO
     \includegraphics[scale=.5]{results/img/dic_marker=CD57.pdf} &
     \includegraphics[scale=.5]{results/img/dic_marker=EOMES.pdf} \\
   \end{tabular}
-  \caption{DICs for various markers and $K$.}
+  \caption{DICs for various markers and $K$. \alert{In (c), for $K=6$, one of
+  the $\sigma_k$'s approached 0, leading to strange patterns in the DIC. The
+  corresponding $\eta_{i,k}$ was small, but the log-likelihood was
+  deceptively large because of the small $\sigma_k$, leading to low DIC.}}
   \label{fig:data-study-dics-1}
 \end{figure}
 
@@ -144,13 +148,46 @@ TODO
     \includegraphics[scale=.5]{results/img/dic_marker=Siglec7.pdf} \\
   \end{tabular}
   \caption*{Figure~\ref{fig:data-study-dics-1} continued: DICs for various
-  markers and $K$. \alert{in (f), one of the $\sigma_k$'s approached 0,
+  markers and $K$. \alert{In (f), one of the $\sigma_k$'s approached 0,
   leading to strange patterns in the DIC. The corresponding $\eta_{i,k}$ was
   small, but the log-likelihood was deceptively large because of the small
   $\sigma$.}}
   \label{fig:data-study-dics-2}
 \end{figure}
 
+% gamma_i
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (a) CD3z & (b) CD56 \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=true/img/gamma.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/gamma.pdf} \\
+    (c) CD57 & (d) EOMES \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD57_skewtmix=true/img/gamma.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=EOMES_skewtmix=true/img/gamma.pdf} \\
+  \end{tabular}
+  \caption{Estimate of density of $\gamma_i$ (blue for $\gamma_C$ and red for
+  $\gamma_T$). Shaded regions are the 95\% credible intervals. Solid and
+  dashed lines are the posterior and empirical means, respectively.}
+  \label{fig:data-study-gamma-i-1}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (e) Granzyme A & (f) LAG3 \\
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=true/img/gamma.pdf} &
+    \includegraphics[scale=0.5]{results/K=8_marker=LAG3_skewtmix=true/img/gamma.pdf} \\
+    (g) Perforin & (h) Siglec7  \\
+    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=true/img/gamma.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=Siglec7_skewtmix=true/img/gamma.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-gamma-i-1} continued. Estimate of
+  density of $\gamma_i$ (blue for $\gamma_C$ and red for $\gamma_T$). Shaded
+  regions are the 95\% credible intervals. Solid and dashed lines are the
+  posterior and empirical means, respectively.}
+  \label{fig:data-study-gamma-i-2}
+\end{figure}
 
 % Gi
 \begin{figure}[!t]
@@ -163,6 +200,10 @@ TODO
     \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/post-density.pdf} &
     \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=false/img/post-density.pdf} \\
   \end{tabular}
+  \caption{Estimate of density of $\tilde G_i$ (blue for $\tilde G_C$ and red
+  for $\tilde G_T$). Histogram of data in grey. Mixture of skew-t and normal
+  in left and right columns, respectively.}
+  \label{fig:data-study-tilde-Gi-1}
 \end{figure}
 
 \begin{figure}[!t]
@@ -175,6 +216,11 @@ TODO
     \includegraphics[scale=0.5]{results/K=3_marker=EOMES_skewtmix=true/img/post-density.pdf} &
     \includegraphics[scale=0.5]{results/K=4_marker=EOMES_skewtmix=false/img/post-density.pdf} \\
   \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-tilde-Gi-1} continued. Estimate of
+  density of $\tilde G_i$ (blue for $\tilde G_C$ and red for $\tilde G_T$).
+  Histogram of data in grey. Mixture of skew-t and normal in left and right
+  columns, respectively.}
+  \label{fig:data-study-tilde-Gi-2}
 \end{figure}
 
 \begin{figure}[!t]
@@ -187,6 +233,11 @@ TODO
     \includegraphics[scale=0.5]{results/K=8_marker=LAG3_skewtmix=true/img/post-density.pdf} &
     \includegraphics[scale=0.5]{results/K=7_marker=LAG3_skewtmix=false/img/post-density.pdf} \\
   \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-tilde-Gi-1} continued. Estimate of
+  density of $\tilde G_i$ (blue for $\tilde G_C$ and red for $\tilde G_T$).
+  Histogram of data in grey. Mixture of skew-t and normal in left and right
+  columns, respectively.}
+  \label{fig:data-study-tilde-Gi-3}
 \end{figure}
 
 \begin{figure}[!t]
@@ -199,6 +250,10 @@ TODO
     \includegraphics[scale=0.5]{results/K=4_marker=Siglec7_skewtmix=true/img/post-density.pdf} &
     \includegraphics[scale=0.5]{results/K=7_marker=Siglec7_skewtmix=false/img/post-density.pdf} \\
   \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-tilde-Gi-1} continued. Estimate of
+  density of $\tilde G_i$ (blue for $\tilde G_C$ and red for $\tilde G_T$).
+  Histogram of data in grey. Mixture of skew-t and normal in left and right
+  columns, respectively.}
 \end{figure}
 
 % Fi. TODO: add areas.
@@ -212,7 +267,10 @@ TODO
     \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/Fi-postmean.pdf} &
     \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=false/img/Fi-postmean.pdf} \\
   \end{tabular}
-  \caption{Areas between curves: (a) 36.75, (b) 36.68,(c) 14.69, (d) 14.19.}
+  \caption{Posterior mean of CDF of $F_i$ (blue for $F_C$ and red for $F_T$).
+  Areas between curves: (a) 36.75, (b) 36.68, (c) 14.69, (d) 14.19. Mixture
+  of skew-t and normal in left and right columns, respectively.}
+  \label{fig:data-study-Fi-1}
 \end{figure}
 
 \begin{figure}[!t]
@@ -225,6 +283,11 @@ TODO
     \includegraphics[scale=0.5]{results/K=3_marker=EOMES_skewtmix=true/img/Fi-postmean.pdf} &
     \includegraphics[scale=0.5]{results/K=4_marker=EOMES_skewtmix=false/img/Fi-postmean.pdf} \\
   \end{tabular}
+  \label{fig:data-study-Fi-2}
+  \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
+  of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
+  (e) 0.002334, (f) 0.0009186, (g) 26.50, (h) 25.90. Mixture of skew-t and
+  normal in left and right columns, respectively.}
 \end{figure}
 
 \begin{figure}[!t]
@@ -237,6 +300,11 @@ TODO
     \includegraphics[scale=0.5]{results/K=8_marker=LAG3_skewtmix=true/img/Fi-postmean.pdf} &
     \includegraphics[scale=0.5]{results/K=7_marker=LAG3_skewtmix=false/img/Fi-postmean.pdf} \\
   \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
+  of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
+  (i) 9.533, (j) 10.10, (k) 0.05906, (l) 0.05611. Mixture of skew-t and
+  normal in left and right columns, respectively.}
+  \label{fig:data-study-Fi-3}
 \end{figure}
 
 \begin{figure}[!t]
@@ -249,6 +317,11 @@ TODO
     \includegraphics[scale=0.5]{results/K=4_marker=Siglec7_skewtmix=true/img/Fi-postmean.pdf} &
     \includegraphics[scale=0.5]{results/K=7_marker=Siglec7_skewtmix=false/img/Fi-postmean.pdf} \\
   \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
+  of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
+  (m) 77.87, (n) 78.02, (o) 5,981, (p) 6.133. Mixture of skew-t and normal in
+  left and right columns, respectively.}
+  \label{fig:data-study-Fi-4}
 \end{figure}
 
 
