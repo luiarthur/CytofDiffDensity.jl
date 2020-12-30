@@ -133,7 +133,8 @@ TODO
   \caption{DICs for various markers and $K$. \alert{In (c), for $K=6$, one of
   the $\sigma_k$'s approached 0, leading to strange patterns in the DIC. The
   corresponding $\eta_{i,k}$ was small, but the log-likelihood was
-  deceptively large because of the small $\sigma_k$, leading to low DIC.}}
+  deceptively large because of the small $\sigma_k$, leading to low DIC.} For
+  $K=5$ in (c) }
   \label{fig:data-study-dics-1}
 \end{figure}
 
@@ -193,9 +194,9 @@ TODO
 \begin{figure}[!t]
   \centering
   \begin{tabular}{cc}
-    (a) CD3z (Skew-t mixture ($K=5$)) & (b) CD3z (Normal mixture ($K=5$)) \\
-    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=true/img/post-density.pdf} &
-    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=false/img/post-density.pdf} \\
+    (a) CD3z (Skew-t mixture ($K=3$)) & (b) CD3z (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=CD3z_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=CD3z_skewtmix=false/img/post-density.pdf} \\
     (c) CD56 (Skew-t mixture ($K=5$)) & (d) CD56 (Normal mixture ($K=5$)) \\
     \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/post-density.pdf} &
     \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=false/img/post-density.pdf} \\
@@ -209,9 +210,9 @@ TODO
 \begin{figure}[!t]
   \centering
   \begin{tabular}{cc}
-    (e) CD57 (Skew-t mixture ($K=4$)) & (f) CD57 (Normal mixture ($K=4$)) \\
-    \includegraphics[scale=0.5]{results/K=4_marker=CD57_skewtmix=true/img/post-density.pdf} &
-    \includegraphics[scale=0.5]{results/K=4_marker=CD57_skewtmix=false/img/post-density.pdf} \\
+    (e) CD57 (Skew-t mixture ($K=3$)) & (f) CD57 (Normal mixture ($K=2$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=CD57_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=2_marker=CD57_skewtmix=false/img/post-density.pdf} \\
     (g) EOMES (Skew-t mixture ($K=3$)) & (h) EOMES (Normal mixture ($K=4$)) \\
     \includegraphics[scale=0.5]{results/K=3_marker=EOMES_skewtmix=true/img/post-density.pdf} &
     \includegraphics[scale=0.5]{results/K=4_marker=EOMES_skewtmix=false/img/post-density.pdf} \\
@@ -229,9 +230,9 @@ TODO
     (i) Granzyme A (Skew-t mixture ($K=5$)) & (j) Granzyme A (Normal mixture ($K=5$)) \\
     \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=true/img/post-density.pdf} &
     \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=false/img/post-density.pdf} \\
-    (k) LAG3 (Skew-t mixture ($K=8$)) & (l) LAG3 (Normal mixture ($K=7$)) \\
-    \includegraphics[scale=0.5]{results/K=8_marker=LAG3_skewtmix=true/img/post-density.pdf} &
-    \includegraphics[scale=0.5]{results/K=7_marker=LAG3_skewtmix=false/img/post-density.pdf} \\
+    (k) LAG3 (Skew-t mixture ($K=4$)) & (l) LAG3 (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=LAG3_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=LAG3_skewtmix=false/img/post-density.pdf} \\
   \end{tabular}
   \caption*{Figure~\ref{fig:data-study-tilde-Gi-1} continued. Estimate of
   density of $\tilde G_i$ (blue for $\tilde G_C$ and red for $\tilde G_T$).
@@ -243,12 +244,12 @@ TODO
 \begin{figure}[!t]
   \centering
   \begin{tabular}{cc}
-    (m) Perforin (Skew-t mixture ($K=4$)) & (n) Perforin (Normal mixture ($K=4$)) \\
-    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=true/img/post-density.pdf} &
+    (m) Perforin (Skew-t mixture ($K=3$)) & (n) Perforin (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=Perforin_skewtmix=true/img/post-density.pdf} &
     \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=false/img/post-density.pdf} \\
-    (o) Siglec7 (Skew-t mixture ($K=4$)) & (p) Siglec7 (Normal mixture ($K=7$)) \\
-    \includegraphics[scale=0.5]{results/K=4_marker=Siglec7_skewtmix=true/img/post-density.pdf} &
-    \includegraphics[scale=0.5]{results/K=7_marker=Siglec7_skewtmix=false/img/post-density.pdf} \\
+    (o) Siglec7 (Skew-t mixture ($K=3$)) & (p) Siglec7 (Normal mixture ($K=6$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=Siglec7_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=6_marker=Siglec7_skewtmix=false/img/post-density.pdf} \\
   \end{tabular}
   \caption*{Figure~\ref{fig:data-study-tilde-Gi-1} continued. Estimate of
   density of $\tilde G_i$ (blue for $\tilde G_C$ and red for $\tilde G_T$).
@@ -256,19 +257,19 @@ TODO
   columns, respectively.}
 \end{figure}
 
-% Fi. TODO: add areas.
+% Fi.
 \begin{figure}[!t]
   \centering
   \begin{tabular}{cc}
-    (a) CD3z (Skew-t mixture ($K=5$)) & (b) CD3z (Normal mixture ($K=5$)) \\
-    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=true/img/Fi-postmean.pdf} &
-    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=false/img/Fi-postmean.pdf} \\
+    (a) CD3z (Skew-t mixture ($K=3$)) & (b) CD3z (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=CD3z_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=CD3z_skewtmix=false/img/Fi-postmean.pdf} \\
     (c) CD56 (Skew-t mixture ($K=5$)) & (d) CD56 (Normal mixture ($K=5$)) \\
     \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/Fi-postmean.pdf} &
     \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=false/img/Fi-postmean.pdf} \\
   \end{tabular}
   \caption{Posterior mean of CDF of $F_i$ (blue for $F_C$ and red for $F_T$).
-  Areas between curves: (a) 36.75, (b) 36.68, (c) 14.69, (d) 14.19. Mixture
+  Areas between curves: (a) 36.71, (b) 36.68, (c) 14.69, (d) 14.19. Mixture
   of skew-t and normal in left and right columns, respectively.}
   \label{fig:data-study-Fi-1}
 \end{figure}
@@ -276,9 +277,9 @@ TODO
 \begin{figure}[!t]
   \centering
   \begin{tabular}{cc}
-    (e) CD57 (Skew-t mixture ($K=4$)) & (f) CD57 (Normal mixture ($K=4$)) \\
-    \includegraphics[scale=0.5]{results/K=4_marker=CD57_skewtmix=true/img/Fi-postmean.pdf} &
-    \includegraphics[scale=0.5]{results/K=4_marker=CD57_skewtmix=false/img/Fi-postmean.pdf} \\
+    (e) CD57 (Skew-t mixture ($K=3$)) & (f) CD57 (Normal mixture ($K=2$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=CD57_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=2_marker=CD57_skewtmix=false/img/Fi-postmean.pdf} \\
     (g) EOMES (Skew-t mixture ($K=3$)) & (h) EOMES (Normal mixture ($K=4$)) \\
     \includegraphics[scale=0.5]{results/K=3_marker=EOMES_skewtmix=true/img/Fi-postmean.pdf} &
     \includegraphics[scale=0.5]{results/K=4_marker=EOMES_skewtmix=false/img/Fi-postmean.pdf} \\
@@ -286,7 +287,7 @@ TODO
   \label{fig:data-study-Fi-2}
   \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
   of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
-  (e) 0.002334, (f) 0.0009186, (g) 26.50, (h) 25.90. Mixture of skew-t and
+  (e) 0.002334, (f) 0.0005612, (g) 26.50, (h) 25.49. Mixture of skew-t and
   normal in left and right columns, respectively.}
 \end{figure}
 
@@ -296,13 +297,13 @@ TODO
     (i) Granzyme A (Skew-t mixture ($K=5$)) & (j) Granzyme A (Normal mixture ($K=5$)) \\
     \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=true/img/Fi-postmean.pdf} &
     \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=false/img/Fi-postmean.pdf} \\
-    (k) LAG3 (Skew-t mixture ($K=8$)) & (l) LAG3 (Normal mixture ($K=7$)) \\
-    \includegraphics[scale=0.5]{results/K=8_marker=LAG3_skewtmix=true/img/Fi-postmean.pdf} &
-    \includegraphics[scale=0.5]{results/K=7_marker=LAG3_skewtmix=false/img/Fi-postmean.pdf} \\
+    (k) LAG3 (Skew-t mixture ($K=4$)) & (l) LAG3 (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=LAG3_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=LAG3_skewtmix=false/img/Fi-postmean.pdf} \\
   \end{tabular}
   \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
   of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
-  (i) 9.533, (j) 10.10, (k) 0.05906, (l) 0.05611. Mixture of skew-t and
+  (i) 9.533, (j) 10.10, (k) 0.04911, (l) 0.04803. Mixture of skew-t and
   normal in left and right columns, respectively.}
   \label{fig:data-study-Fi-3}
 \end{figure}
@@ -310,16 +311,16 @@ TODO
 \begin{figure}[!t]
   \centering
   \begin{tabular}{cc}
-    (m) Perforin (Skew-t mixture ($K=4$)) & (n) Perforin (Normal mixture ($K=4$)) \\
-    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=true/img/Fi-postmean.pdf} &
+    (m) Perforin (Skew-t mixture ($K=3$)) & (n) Perforin (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=Perforin_skewtmix=true/img/Fi-postmean.pdf} &
     \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=false/img/Fi-postmean.pdf} \\
-    (o) Siglec7 (Skew-t mixture ($K=4$)) & (p) Siglec7 (Normal mixture ($K=7$)) \\
-    \includegraphics[scale=0.5]{results/K=4_marker=Siglec7_skewtmix=true/img/Fi-postmean.pdf} &
-    \includegraphics[scale=0.5]{results/K=7_marker=Siglec7_skewtmix=false/img/Fi-postmean.pdf} \\
+    (o) Siglec7 (Skew-t mixture ($K=3$)) & (p) Siglec7 (Normal mixture ($K=8$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=Siglec7_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=6_marker=Siglec7_skewtmix=false/img/Fi-postmean.pdf} \\
   \end{tabular}
   \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
   of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
-  (m) 77.87, (n) 78.02, (o) 5,981, (p) 6.133. Mixture of skew-t and normal in
+  (m) 77.86, (n) 78.02, (o) 5.957, (p) 5.965. Mixture of skew-t and normal in
   left and right columns, respectively.}
   \label{fig:data-study-Fi-4}
 \end{figure}

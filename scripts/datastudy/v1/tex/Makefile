@@ -10,3 +10,6 @@ link: metrics
 metrics:
 	python3 scripts/elbo.py
 
+show_best_dic:
+	@# Done manually.
+	source best-models.sh
