@@ -16,15 +16,19 @@ skewtmix = [true, false]
 sims = dict_list(Dict(:K => Ks, :snum => snums, :skewtmix => skewtmix))
 
 # Run simulations in parallel.
+println("Fit models in parallel...")
 @time res = pmap(run, sims, on_error=identity)
 
 # Print results status.
 foreach(z -> println("$(z[1]) => $(z[2])"), zip(sims, res))
 
 # Post process
+println("Post process in parallel...")
 pp_res = pmap(postprocess, sims)
 # postprocess(Dict(:beta=>1, :K=>5, :snum=>1))
 
+# DIC
+println("Compute DIC sequentially...")
 for snum in [1,2,3,4]
   imdir = mkpath(joinpath(Info.resultsdir_simstudy, simname, "img"))
   plot(size=plotsize)
