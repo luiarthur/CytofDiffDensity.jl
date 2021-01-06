@@ -1,0 +1,331 @@
+\documentclass[12pt]{article} % 12-point font
+
+\usepackage[margin=1in]{geometry} % set page to 1-inch margins
+\usepackage{bm}
+\usepackage{amsmath} % for math
+\usepackage{amssymb} % like \Rightarrow
+\usepackage{caption}
+\setlength\parindent{0pt} % Suppresses the indentation of new paragraphs.
+
+% Big display
+\newcommand{\ds}{\displaystyle}
+% Parenthesis
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\p}[1]{\left(#1\right)}
+\newcommand{\bk}[1]{\left[#1\right]}
+\newcommand{\bc}[1]{\left\{#1\right\}}
+\newcommand{\abs}[1]{\left|#1\right|}
+% Derivatives
+\newcommand{\df}[2]{\frac{d#1}{d#2}}
+\newcommand{\ddf}[2]{\frac{d^2#1}{d{#2}^2}}
+\newcommand{\pd}[2]{\frac{\partial#1}{\partial#2}}
+\newcommand{\pdd}[2]{\frac{\partial^2#1}{\partial{#2}^2}}
+% Distributions
+\newcommand{\Bernoulli}{\text{Bernoulli}}
+\newcommand{\Beta}{\text{Beta}}
+\newcommand{\Binomial}{\text{Binomial}}
+\newcommand{\Categorical}{\text{Categorical}}
+\newcommand{\Dirichlet}{\text{Dirichlet}}
+\newcommand{\G}{\text{Gamma}}
+\newcommand{\InvGamma}{\text{Inv-Gamma}}
+\newcommand{\LogNormal}{\text{LogNormal}}
+\newcommand{\Normal}{\text{Normal}}
+\newcommand{\MvNormal}{\text{MvNormal}}
+\newcommand{\Uniform}{\text{Uniform}}
+\newcommand{\SkewT}{\mathcal{ST}}
+\newcommand{\TruncatedNormal}{\text{TruncatedNormal}}
+% Statistics
+\newcommand{\E}{\text{E}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\iid}{\overset{iid}{\sim}}
+\newcommand{\ind}{\overset{ind}{\sim}}
+\newcommand{\Ind}[1]{\mathbf{1}\bc{#1}}
+\newcommand{\logistic}{\text{logistic}}
+\newcommand{\logit}{\text{logit}}
+
+% Graphics
+\usepackage{graphicx}  % for figures
+\usepackage{float} % Put figure exactly where I want [H]
+
+% Colors
+\usepackage[dvipsnames]{xcolor}
+\newcommand{\alert}[1]{\color{red}#1 \color{black}}
+\newcommand{\todo}[1]{\color{blue}#1 \color{black}}
+\newcommand{\edited}[1]{\color{green}#1 \color{black}}
+
+% Uncomment if using bibliography
+% Bibliography
+% \usepackage{natbib}
+% \bibliographystyle{plainnat}
+
+% Adds settings for hyperlinks. (Mainly for table of contents.)
+\usepackage{hyperref}
+\hypersetup{
+  pdfborder={0 0 0} % removes red box from links
+}
+
+% Title Settings
+\title{Data Analysis}
+\author{Arthur Lui}
+\date{\today} % \date{} to set date to empty
+
+% MAIN %
+\begin{document}
+
+\maketitle
+
+\section{TO DO}
+\begin{itemize}
+  \item MCMC info
+  \begin{itemize}
+    \item burning iterations (30000)
+    \item number of samples (4000)
+    \item thinning factor (2)
+  \end{itemize}
+  \item Make the DIC graphs for each model
+  \item Create the following graphs for the best model for each marker:
+  \begin{itemize}
+    \item $F_i$
+    \item posterior density of $\tilde G_i$
+  \end{itemize}
+  \item Fix graphs where the legend covers the graph. 
+\end{itemize}
+
+\begin{table}[!t]
+  \centering
+  \begin{tabular}{|c|rrrrrr|}
+    \hline
+    Marker & $N_C$ & $N_T$ & $Q_C$ & $Q_T$ & $N_C - Q_C$ & $N_T - Q_T$ \\ 
+    \hline
+    CD3z       & 86915 & 92468 &  1361 &   411 & 85554 & 92057 \\ 
+    CD56       & 86915 & 92468 &     0 &     0 & 86915 & 92468 \\ 
+    CD57       & 86915 & 92468 & 85919 & 91429 &   996 &  1039 \\ 
+    EOMES      & 86915 & 92468 &  8374 &  7369 & 78541 & 85099 \\ 
+    Granzyme A & 86915 & 92468 &    27 &    82 & 86888 & 92386 \\ 
+    LAG3       & 86915 & 92468 & 57867 & 65782 & 29048 & 26686 \\ 
+    Perforin   & 86915 & 92468 &    90 &   911 & 86825 & 91557 \\ 
+    Siglec7    & 86915 & 92468 &  5759 &  4601 & 81156 & 87867 \\
+    \hline
+  \end{tabular} 
+  \caption{Counts of the number of cells in donor sample before ($N_C$) and
+  after ($N_T$) treatment. $Q_C$ and $Q_T$ respectively denote the number
+  of zeros in the measurements before and after treatment.}
+  \label{tab:data-counts}
+\end{table}
+
+
+\section{Setup}\label{sec:data-analysis-setup} % add labels to refer to other sections easily
+TODO
+
+\section{Results}\label{sec:data-analysis-results} % add labels to refer to other sections easily
+
+% DIC
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (a) CD3z & (b) CD56 \\
+    \includegraphics[scale=.5]{results/img/dic_marker=CD3z.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_marker=CD56.pdf} \\
+    (c) CD57 & (d) EOMES \\
+    \includegraphics[scale=.5]{results/img/dic_marker=CD57.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_marker=EOMES.pdf} \\
+  \end{tabular}
+  \caption{DICs for various markers and $K$. \alert{In (c), for $K=6$, one of
+  the $\sigma_k$'s approached 0, leading to strange patterns in the DIC. The
+  corresponding $\eta_{i,k}$ was small, but the log-likelihood was
+  deceptively large because of the small $\sigma_k$, leading to low DIC.} For
+  $K=5$ in (c) }
+  \label{fig:data-study-dics-1}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (e) Granzyme A & (f) LAG3 \\
+    \includegraphics[scale=.5]{results/img/dic_marker=Granzyme_A.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_marker=LAG3.pdf} \\
+    (g) Perforin & (h) Siglec7 \\
+    \includegraphics[scale=.5]{results/img/dic_marker=Perforin.pdf} &
+    \includegraphics[scale=.5]{results/img/dic_marker=Siglec7.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-dics-1} continued: DICs for various
+  markers and $K$. \alert{In (f), one of the $\sigma_k$'s approached 0,
+  leading to strange patterns in the DIC. The corresponding $\eta_{i,k}$ was
+  small, but the log-likelihood was deceptively large because of the small
+  $\sigma$.}}
+  \label{fig:data-study-dics-2}
+\end{figure}
+
+% gamma_i
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (a) CD3z & (b) CD56 \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD3z_skewtmix=true/img/gamma.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/gamma.pdf} \\
+    (c) CD57 & (d) EOMES \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD57_skewtmix=true/img/gamma.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=EOMES_skewtmix=true/img/gamma.pdf} \\
+  \end{tabular}
+  \caption{Estimate of density of $\gamma_i$ (blue for $\gamma_C$ and red for
+  $\gamma_T$). Shaded regions are the 95\% credible intervals. Solid and
+  dashed lines are the posterior and empirical means, respectively.}
+  \label{fig:data-study-gamma-i-1}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (e) Granzyme A & (f) LAG3 \\
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=true/img/gamma.pdf} &
+    \includegraphics[scale=0.5]{results/K=8_marker=LAG3_skewtmix=true/img/gamma.pdf} \\
+    (g) Perforin & (h) Siglec7  \\
+    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=true/img/gamma.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=Siglec7_skewtmix=true/img/gamma.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-gamma-i-1} continued. Estimate of
+  density of $\gamma_i$ (blue for $\gamma_C$ and red for $\gamma_T$). Shaded
+  regions are the 95\% credible intervals. Solid and dashed lines are the
+  posterior and empirical means, respectively.}
+  \label{fig:data-study-gamma-i-2}
+\end{figure}
+
+% Gi
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (a) CD3z (Skew-t mixture ($K=3$)) & (b) CD3z (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=CD3z_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=CD3z_skewtmix=false/img/post-density.pdf} \\
+    (c) CD56 (Skew-t mixture ($K=5$)) & (d) CD56 (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=false/img/post-density.pdf} \\
+  \end{tabular}
+  \caption{Estimate of density of $\tilde G_i$ (blue for $\tilde G_C$ and red
+  for $\tilde G_T$). Histogram of data in grey. Mixture of skew-t and normal
+  in left and right columns, respectively.}
+  \label{fig:data-study-tilde-Gi-1}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (e) CD57 (Skew-t mixture ($K=3$)) & (f) CD57 (Normal mixture ($K=2$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=CD57_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=2_marker=CD57_skewtmix=false/img/post-density.pdf} \\
+    (g) EOMES (Skew-t mixture ($K=3$)) & (h) EOMES (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=EOMES_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=EOMES_skewtmix=false/img/post-density.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-tilde-Gi-1} continued. Estimate of
+  density of $\tilde G_i$ (blue for $\tilde G_C$ and red for $\tilde G_T$).
+  Histogram of data in grey. Mixture of skew-t and normal in left and right
+  columns, respectively.}
+  \label{fig:data-study-tilde-Gi-2}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (i) Granzyme A (Skew-t mixture ($K=5$)) & (j) Granzyme A (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=false/img/post-density.pdf} \\
+    (k) LAG3 (Skew-t mixture ($K=4$)) & (l) LAG3 (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=LAG3_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=LAG3_skewtmix=false/img/post-density.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-tilde-Gi-1} continued. Estimate of
+  density of $\tilde G_i$ (blue for $\tilde G_C$ and red for $\tilde G_T$).
+  Histogram of data in grey. Mixture of skew-t and normal in left and right
+  columns, respectively.}
+  \label{fig:data-study-tilde-Gi-3}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (m) Perforin (Skew-t mixture ($K=3$)) & (n) Perforin (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=Perforin_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=false/img/post-density.pdf} \\
+    (o) Siglec7 (Skew-t mixture ($K=3$)) & (p) Siglec7 (Normal mixture ($K=6$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=Siglec7_skewtmix=true/img/post-density.pdf} &
+    \includegraphics[scale=0.5]{results/K=6_marker=Siglec7_skewtmix=false/img/post-density.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-tilde-Gi-1} continued. Estimate of
+  density of $\tilde G_i$ (blue for $\tilde G_C$ and red for $\tilde G_T$).
+  Histogram of data in grey. Mixture of skew-t and normal in left and right
+  columns, respectively.}
+\end{figure}
+
+% Fi.
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (a) CD3z (Skew-t mixture ($K=3$)) & (b) CD3z (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=CD3z_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=CD3z_skewtmix=false/img/Fi-postmean.pdf} \\
+    (c) CD56 (Skew-t mixture ($K=5$)) & (d) CD56 (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=CD56_skewtmix=false/img/Fi-postmean.pdf} \\
+  \end{tabular}
+  \caption{Posterior mean of CDF of $F_i$ (blue for $F_C$ and red for $F_T$).
+  Areas between curves: (a) 36.71, (b) 36.68, (c) 14.69, (d) 14.19. Mixture
+  of skew-t and normal in left and right columns, respectively.}
+  \label{fig:data-study-Fi-1}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (e) CD57 (Skew-t mixture ($K=3$)) & (f) CD57 (Normal mixture ($K=2$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=CD57_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=2_marker=CD57_skewtmix=false/img/Fi-postmean.pdf} \\
+    (g) EOMES (Skew-t mixture ($K=3$)) & (h) EOMES (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=EOMES_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=EOMES_skewtmix=false/img/Fi-postmean.pdf} \\
+  \end{tabular}
+  \label{fig:data-study-Fi-2}
+  \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
+  of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
+  (e) 0.002334, (f) 0.0005612, (g) 26.50, (h) 25.49. Mixture of skew-t and
+  normal in left and right columns, respectively.}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (i) Granzyme A (Skew-t mixture ($K=5$)) & (j) Granzyme A (Normal mixture ($K=5$)) \\
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=5_marker=Granzyme_A_skewtmix=false/img/Fi-postmean.pdf} \\
+    (k) LAG3 (Skew-t mixture ($K=4$)) & (l) LAG3 (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=4_marker=LAG3_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=LAG3_skewtmix=false/img/Fi-postmean.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
+  of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
+  (i) 9.533, (j) 10.10, (k) 0.04911, (l) 0.04803. Mixture of skew-t and
+  normal in left and right columns, respectively.}
+  \label{fig:data-study-Fi-3}
+\end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \begin{tabular}{cc}
+    (m) Perforin (Skew-t mixture ($K=3$)) & (n) Perforin (Normal mixture ($K=4$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=Perforin_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=4_marker=Perforin_skewtmix=false/img/Fi-postmean.pdf} \\
+    (o) Siglec7 (Skew-t mixture ($K=3$)) & (p) Siglec7 (Normal mixture ($K=8$)) \\
+    \includegraphics[scale=0.5]{results/K=3_marker=Siglec7_skewtmix=true/img/Fi-postmean.pdf} &
+    \includegraphics[scale=0.5]{results/K=6_marker=Siglec7_skewtmix=false/img/Fi-postmean.pdf} \\
+  \end{tabular}
+  \caption*{Figure~\ref{fig:data-study-Fi-1} continued. Posterior mean of CDF
+  of $F_i$ (blue for $F_C$ and red for $F_T$). Areas between curves:
+  (m) 77.86, (n) 78.02, (o) 5.957, (p) 5.965. Mixture of skew-t and normal in
+  left and right columns, respectively.}
+  \label{fig:data-study-Fi-4}
+\end{figure}
+
+
+% Uncomment if using bibliography:
+% \bibliography{bib}
+\end{document}
