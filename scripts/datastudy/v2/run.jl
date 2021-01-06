@@ -9,9 +9,15 @@ println("Compile libraries on workers ..."); flush(stdout)
 @everywhere include("imports.jl")
 println("Finished loading libraries."); flush(stdout)
 
-Ks = collect(2:9)
 markers = [:CD3z, :EOMES, :Perforin, :Granzyme_A, :Siglec7, :LAG3, :CD56, :CD57]
+println("markers: ", markers)
+
+Ks = collect(2:9)
+println("K: ", Ks)
+
 skewtmix = [true, false]
+println("skewtmix: ", skewtmix)
+
 sims = dict_list(Dict(:K => Ks, :marker => markers, :skewtmix => skewtmix))
 
 # Run simulations in parallel.
