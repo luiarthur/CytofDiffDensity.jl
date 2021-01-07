@@ -10,29 +10,30 @@ println("Compile libraries on workers ..."); flush(stdout)
 println("Finished loading libraries."); flush(stdout)
 
 markers = [:CD3z, :EOMES, :Perforin, :Granzyme_A, :Siglec7, :LAG3, :CD56, :CD57]
-println("markers: ", markers)
+println("markers: ", markers); flush(stdout)
 
 Ks = collect(2:9)
 println("K: ", Ks)
 
 skewtmix = [true, false]
-println("skewtmix: ", skewtmix)
+println("skewtmix: ", skewtmix); flush(stdout)
 
 sims = dict_list(Dict(:K => Ks, :marker => markers, :skewtmix => skewtmix))
 
 # Run simulations in parallel.
-println("Running analyses ...")
+println("Running analyses ..."); flush(stdout)
 @time res = pmap(run, sims, on_error=identity)
 
 # Print results status.
 foreach(z -> println("$(z[1]) => $(z[2])"), zip(sims, res))
+flush(stdout)
 
 # Post process
-println("Post process ...")
+println("Post process ..."); flush(stdout)
 @time pp_res = pmap(postprocess, sims)
 
 # Combine results, plot DIC.
-println("Compute DIC ...")
+println("Compute DIC ..."); flush(stdout)
 for marker in markers
   imdir = mkpath(joinpath(Info.resultsdir_datastudy, simname, "img"))
   plot(size=plotsize)
@@ -61,6 +62,7 @@ end
 
 
 # Send results to S3
+println("Send results to s3 ..."); flush(stdout)
 Util.s3sync(from="$(Info.resultsdir_datastudy)/$(simname)",
             to="$(Info.awsbucket_datastudy)/$(simname)",
             tags=`--exclude '*.nfs'`)
