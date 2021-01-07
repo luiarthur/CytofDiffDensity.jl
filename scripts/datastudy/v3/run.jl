@@ -4,7 +4,7 @@ println("Finished loading libraries."); flush(stdout)
 
 using Distributed
 rmprocs(workers())
-addprocs(70)
+addprocs(32)
 println("Compile libraries on workers ..."); flush(stdout)
 @everywhere include("imports.jl")
 println("Finished loading libraries."); flush(stdout)
