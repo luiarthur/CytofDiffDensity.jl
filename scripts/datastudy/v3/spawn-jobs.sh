@@ -35,7 +35,7 @@ do
     for stm in $skewmixt
     do
       logname="marker=${marker}_K=${K}_stm=${stm}"
-      srun -N1 -n1 -c1 julia run.jl $marker $K $stm &> out/${logname}-log.txt &
+      srun -N1 -n1 -c1 julia run-single.jl $marker $K $stm &> out/${logname}-log.txt &
     done
   done
 done
