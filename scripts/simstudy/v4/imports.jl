@@ -272,5 +272,5 @@ function plot_dic(snum, Ks, skewtmix; calibrate=false)
   end
 
   calibrate || savefig(joinpath(imdir, "dic_snum=$(snum).pdf"))
-  closeall()
+  calibrate || closeall()
 end

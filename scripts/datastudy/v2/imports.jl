@@ -227,20 +227,88 @@ function parse_dic(model_info::String)
 end
 
 
-function print_number_of_small_clusters(sim)
+function print_number_of_small_clusters(sim; p=0.02)
   # Make results dir if needed.
   resultsdir = make_resultsdir(sim)
 
   Util.redirect_stdout_to_file(joinpath(resultsdir, "small_clusters.txt")) do
-    _print_number_of_small_clusters(sim, resultsdir)
+    _print_number_of_small_clusters(sim, resultsdir, p=p)
   end
 end
 
 
-function _print_number_of_small_clusters(sim, resultsdir)
+function _print_number_of_small_clusters(sim, resultsdir; p=0.02)
   r = (; BSON.load(joinpath(resultsdir, "results.bson"))...)
-  num_small_clusters = count_small_clusters(r.chain)
+  num_small_clusters = cdd.count_small_clusters(r.chain, p=p)
   println(num_small_clusters)
+end
+
+
+function plot_dic(marker, Ks, skewtmix; calibrate=false)
+  imdir = mkpath(joinpath(Info.resultsdir_datastudy, simname, "img"))
+
+  function init_plot(; half=false, use_xlabel=true)
+    if half
+      plot(size=(plotsize[1], plotsize[2] / 2))
+    else
+      plot(size=plotsize)
+    end
+
+    if calibrate
+      use_xlabel && xlabel!("number of small components")
+    else
+      use_xlabel && xlabel!("K")
+    end
+
+    ylabel!("DIC")
+  end
+
+  calibrate || init_plot()
+  calibrate_plots = []
+  for stm in skewtmix
+    dics = Float64[]
+    num_small_clusters = Float64[]
+    for K in Ks
+      expname = savename(Dict(:marker => marker, :K => K, :skewtmix => stm))
+      resdir = joinpath(Info.resultsdir_datastudy, simname, expname)
+
+      # DIC
+      info_path = joinpath(resdir, "info.txt")
+      model_info = open(f->read(f, String), info_path)
+      _dic = parse_dic(model_info)
+      append!(dics, _dic)
+
+      # Calibration
+      if calibrate
+        num_small_clusters_path = joinpath(resdir, "small_clusters.txt")
+        _num_small_clusters = parse(Float64, open(f->read(f, String), num_small_clusters_path))
+        append!(num_small_clusters, _num_small_clusters)
+      end
+    end
+    modelname = stm ? "Skew-t mixture" : "Normal mixture"
+
+
+    if calibrate
+      init_plot(use_xlabel=!stm)
+      _p = plot!(num_small_clusters, dics, label=modelname,
+                 legend=:topright, lw=3, alpha=.7)
+      append!(calibrate_plots, [_p])
+      annotate!(num_small_clusters, dics, Ks)
+      savefig(joinpath(imdir, "calibrate_marker=$(marker)_skewtmix=$(stm).pdf"))
+      closeall()
+    else
+      plot!(Ks, dics, marker=:square, ms=8, label=modelname, legend=:topright)
+    end
+  end
+
+  if calibrate 
+    plot(calibrate_plots[1], calibrate_plots[2], layout=@layout [a; b])
+    savefig(joinpath(imdir, "calibrate_merged_marker=$(marker).pdf"))
+    closeall()
+  end
+
+  calibrate || savefig(joinpath(imdir, "dic_marker=$(marker).pdf"))
+  calibrate || closeall()
 end
 
 # TODO:
