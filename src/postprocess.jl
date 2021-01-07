@@ -127,3 +127,13 @@ end
 
 function compute_Fi_tilde_cdf_truth(simdata::NamedTuple) end
 function plot_Fi_tilde_cdf_truth!(simdata::NamedTuple) end
+
+"""
+Return the average number of small clusters in the two samples.
+"""
+function count_small_clusters(chain::AbstractVector; p::Real=0.01)
+  etaC = getindex.(chain, :etaC)
+  etaT = getindex.(chain, :etaT)
+  nsmall_clust = map(eta -> sum(eta .< p), etaC + etaT)
+  return mean(nsmall_clust)
+end

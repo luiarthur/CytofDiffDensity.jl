@@ -21,7 +21,7 @@ import MCMC: Bijectors
 # Plot settings
 plotsize = (450, 450)
 Plots.scalefontsizes()
-Plots.scalefontsizes(1.5)
+Plots.scalefontsizes(1.4)
 
 simname = "v2"
 make_resultsdir(sim) = mkpath("$(Info.resultsdir_datastudy)/$(simname)/$(savename(sim))")
@@ -226,6 +226,22 @@ function parse_dic(model_info::String)
   return parse(Float64, m)
 end
 
+
+function print_number_of_small_clusters(sim)
+  # Make results dir if needed.
+  resultsdir = make_resultsdir(sim)
+
+  Util.redirect_stdout_to_file(joinpath(resultsdir, "small_clusters.txt")) do
+    _print_number_of_small_clusters(sim, resultsdir)
+  end
+end
+
+
+function _print_number_of_small_clusters(sim, resultsdir)
+  r = (; BSON.load(joinpath(resultsdir, "results.bson"))...)
+  num_small_clusters = count_small_clusters(r.chain)
+  println(num_small_clusters)
+end
 
 # TODO:
 # - [ ] Implement `resume`.

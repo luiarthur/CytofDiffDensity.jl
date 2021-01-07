@@ -27,29 +27,14 @@ println("Post process in parallel...")
 pp_res = pmap(postprocess, sims)
 # postprocess(Dict(:beta=>1, :K=>5, :snum=>1))
 
+# Print number of small clusters
+sc_res = map(sim -> print_number_of_small_clusters(sim, p=0.02),
+             cdd.MCMC.ProgressBar(sims))
+
 # DIC
 println("Compute DIC sequentially...")
-for snum in [1,2,3,4]
-  imdir = mkpath(joinpath(Info.resultsdir_simstudy, simname, "img"))
-  plot(size=plotsize)
-  xlabel!("K")
-  ylabel!("DIC")
-  for stm in skewtmix
-    dics = Float64[]
-    for K in Ks
-      info_path = joinpath(Info.resultsdir_simstudy, simname,
-                           savename(Dict(:snum => snum, :K => K, :skewtmix => stm)),
-                           "info.txt")
-      model_info = open(f->read(f, String), info_path)
-      _dic = parse_dic(model_info)
-      append!(dics, _dic)
-    end
-    modelname = stm ? "Skew-t mixture" : "Normal mixture"
-    plot!(Ks, dics, marker=:square, ms=8, label=modelname, legend=:topright)
-  end
-  savefig(joinpath(imdir, "dic_snum=$(snum).pdf"))
-  closeall()
-end
+foreach(snum -> plot_dic(snum, Ks, skewtmix), snums)
+foreach(snum -> plot_dic(snum, Ks, skewtmix, calibrate=true), snums)
 
 
 # Send results to S3
