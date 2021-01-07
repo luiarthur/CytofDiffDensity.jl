@@ -25,7 +25,7 @@ Ks=`seq 2 9`
 skewmixt="0 1"
 
 echo "Compiling job ..."
-srun -n1 -c1 julia imports.jl
+srun -N1 -n1 -c1 julia imports.jl
 
 echo "Starting jobs!"
 for marker in $markers
@@ -35,7 +35,7 @@ do
     for stm in $skewmixt
     do
       logname="marker=${marker}_K=${K}_stm=${stm}"
-      srun -n1 -c1 julia run.jl $marker $K $stm &> out/${logname}-log.txt &
+      srun -N1 -n1 -c1 julia run.jl $marker $K $stm &> out/${logname}-log.txt &
     done
   done
 done
