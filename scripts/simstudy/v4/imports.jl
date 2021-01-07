@@ -216,7 +216,7 @@ end
 function plot_dic(snum, Ks, skewtmix; calibrate=false)
   imdir = mkpath(joinpath(Info.resultsdir_simstudy, simname, "img"))
 
-  function init_plot(; half=false)
+  function init_plot(; half=false, use_xlabel=true)
     if half
       plot(size=(plotsize[1], plotsize[2] / 2))
     else
@@ -224,14 +224,15 @@ function plot_dic(snum, Ks, skewtmix; calibrate=false)
     end
 
     if calibrate
-      xlabel!("number of small components")
+      use_xlabel && xlabel!("number of small components")
     else
-      xlabel!("K")
+      use_xlabel && xlabel!("K")
     end
     ylabel!("DIC")
   end
 
   calibrate || init_plot()
+  calibrate_plots = []
   for stm in skewtmix
     dics = Float64[]
     num_small_clusters = Float64[]
@@ -253,14 +254,21 @@ function plot_dic(snum, Ks, skewtmix; calibrate=false)
     modelname = stm ? "Skew-t mixture" : "Normal mixture"
 
     if calibrate
-      init_plot(half=true)
-      plot!(num_small_clusters, dics, label=modelname, legend=:topright, lw=3, alpha=.7)
+      init_plot(use_xlabel=!stm)
+      _p = plot!(num_small_clusters, dics, label=modelname, legend=:topright, lw=3, alpha=.7)
+      append!(calibrate_plots, [_p])
       annotate!(num_small_clusters, dics, Ks)
       savefig(joinpath(imdir, "calibrate_snum=$(snum)_skewtmix=$(stm).pdf"))
       closeall()
     else
       plot!(Ks, dics, marker=:square, ms=8, label=modelname, legend=:topright)
     end
+  end
+
+  if calibrate 
+    plot(calibrate_plots[1], calibrate_plots[2], layout=@layout [a; b])
+    savefig(joinpath(imdir, "calibrate_merged_snum=$(snum).pdf"))
+    closeall()
   end
 
   calibrate || savefig(joinpath(imdir, "dic_snum=$(snum).pdf"))
