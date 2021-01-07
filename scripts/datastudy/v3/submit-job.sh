@@ -12,6 +12,7 @@
 #SBATCH --mem=42G # Memory to be allocated PER NODE
 
 date 
+echo "nproc: `nproc`"
 echo "Starting jobs!"
 julia run.jl &
 echo "Done submitting jobs."

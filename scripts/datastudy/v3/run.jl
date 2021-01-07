@@ -32,34 +32,14 @@ flush(stdout)
 println("Post process ..."); flush(stdout)
 @time pp_res = pmap(postprocess, sims)
 
+# Print number of small clusters
+@time nc_res = pmap(sim -> print_number_of_small_clusters(sim, p=0.02),
+                    cdd.MCMC.ProgressBar(sims), on_error=identity)
+
 # Combine results, plot DIC.
 println("Compute DIC ..."); flush(stdout)
-for marker in markers
-  imdir = mkpath(joinpath(Info.resultsdir_datastudy, simname, "img"))
-  plot(size=plotsize)
-  xlabel!("K")
-  ylabel!("DIC")
-  for stm in skewtmix
-    dics = Float64[]
-    for K in Ks
-      info_path = joinpath(Info.resultsdir_datastudy, simname,
-                           savename(Dict(:marker => marker, :K => K, :skewtmix => stm)),
-                           "info.txt")
-      model_info = open(f->read(f, String), info_path)
-      _dic = parse_dic(model_info)
-      append!(dics, _dic)
-    end
-    modelname = stm ? "Skew-t mixture" : "Normal mixture"
-
-    # FIXME: This was hardcoded...
-    pos = marker in (:LAG3, ) ? :bottomleft : :topright
-
-    plot!(Ks, dics, marker=:square, ms=8, label=modelname, legend=pos)
-  end
-  savefig(joinpath(imdir, "dic_marker=$(marker).pdf"))
-  closeall()
-end
-
+foreach(marker -> plot_dic(marker, Ks, skewtmix), markers)
+foreach(marker -> plot_dic(marker, Ks, skewtmix, calibrate=true), markers)
 
 # Send results to S3
 println("Send results to s3 ..."); flush(stdout)
