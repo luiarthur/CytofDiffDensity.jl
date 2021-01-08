@@ -94,13 +94,15 @@ end
 # Add methods for computing and plotting CDF of F_i
 function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
                               pzero::Pzero; gridsize::Int=100, 
-                              exponentiate=false, N::Integer=10000)
+                              exponentiate=false, N::Integer=10000,
+                              max_quantile=0.999)
   gammaC_mean = mean(infer_Pzero1(pzero, 10000).distC)
   gammaT_mean = mean(infer_Pzero1(pzero, 10000).distT)
 
   y = [gtilde.yC; gtilde.yT]
   if exponentiate
-    ygrid = range(0, exp(quantile(y, .999)), length=gridsize)
+    qmax = exp(quantile(y, max_quantile))
+    ygrid = range(0, qmax, length=gridsize)
   else
     ygrid = make_ygrid(y, gridsize)
   end
@@ -112,17 +114,25 @@ function compute_Fi_tilde_cdf(gtilde::Gtilde, chain::AbstractVector,
   # Compute area between curves.
   area = sum(abs.(cdfC - cdfT) * (ygrid[2] - ygrid[1]))
 
-  return (C=cdfC, T=cdfT, ygrid=ygrid, area=area)
+  if exponentiate
+    return (C=cdfC, T=cdfT, ygrid=ygrid, area=area, qmax=qmax)
+  else
+    return (C=cdfC, T=cdfT, ygrid=ygrid, area=area)
+  end
 end
 function plot_Fi_tilde_cdf!(gtilde::Gtilde, chain::AbstractVector,
                             pzero::Pzero; gridsize::Int=200,
-                            exponentiate=false, N=10000)
+                            exponentiate=false, N=10000, max_quantile=0.999)
   cdfs = compute_Fi_tilde_cdf(gtilde, chain, pzero, gridsize=gridsize,
-                              exponentiate=exponentiate, N=N)
+                              exponentiate=exponentiate, N=N,
+                              max_quantile=max_quantile)
   plot!(cdfs.ygrid, cdfs.C, lw=2, color=:blue, label=nothing)
   plot!(cdfs.ygrid, cdfs.T, lw=2, color=:red, label=nothing)
 
   println("Area between curves: $(cdfs.area) (exponentiate=$(exponentiate))")
+  if exponentiate
+    println("Normalized area between Fi CDFs: $(cdfs.area / qmax)")
+  end
 end
 
 function compute_Fi_tilde_cdf_truth(simdata::NamedTuple) end
