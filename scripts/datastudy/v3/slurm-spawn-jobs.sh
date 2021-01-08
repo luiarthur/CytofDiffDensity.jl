@@ -8,7 +8,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH -o out/slurm-job.out    # Name of stdout output file
 #SBATCH -N 3  # number of nodes
-#SBATCH --ntasks-per-node 24  # maximum number of tasks to be run on a node.
+#SBATCH --ntasks-per-node=24  # maximum number of tasks to be run on a node.
 #SBATCH -t 120:00:00  # Run Time (hh:mm:ss)
 #SBATCH --mem=42G # Memory to be allocated PER NODE
 
