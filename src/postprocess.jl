@@ -131,7 +131,7 @@ function plot_Fi_tilde_cdf!(gtilde::Gtilde, chain::AbstractVector,
 
   println("Area between curves: $(cdfs.area) (exponentiate=$(exponentiate))")
   if exponentiate
-    println("Normalized area between Fi CDFs: $(cdfs.area / qmax)")
+    println("Normalized area between Fi CDFs: $(cdfs.area / cdfs.qmax)")
   end
 end
 
