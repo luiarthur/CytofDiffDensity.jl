@@ -1,3 +1,28 @@
+"""
+Computes hellinger distance between two distributions `f` and `g`.  Evaluates
+densities `f` and `g` over a grid `xs` evenly spaced between `min` and `max`,
+with length of `length`.
+"""
+function hellinger(f, g, min, max; length=1000)
+  xs = range(min, max, length=length)
+  d = xs[2] - xs[1]
+  kernel = sum(d * sqrt.(f.(xs) .* g.(xs)))
+  return sqrt(1 - kernel)
+end
+
+"""
+Computes hellinger distance between two distributions `f` and `g`.  Evaluates
+log densities `log_f` and `log_g` over a grid `xs` evenly spaced between `min`
+and `max`, with length of `length`. This might be more numerically stable than
+`hellinger`.
+"""
+function hellinger_logpdf(log_f, log_g, min, max; length=1000)
+  xs = range(min, max, length=length)
+  log_d = log(xs[2] - xs[1])
+  log_kernel = logsumexp(log_d .+ (log_f.(xs) + log_g.(xs)) / 2)
+  return sqrt(1 - exp(log_kernel))
+end
+
 function loglike(m::MixSkewT, s::T) where T
   loc = s.mu
   scale = s.sigma
