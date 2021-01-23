@@ -28,8 +28,8 @@ pp_res = pmap(postprocess, sims)
 # postprocess(Dict(:beta=>1, :K=>5, :snum=>1))
 
 # Print number of small clusters
-sc_res = map(sim -> print_number_of_small_clusters(sim, p=0.02),
-             cdd.MCMC.ProgressBar(sims))
+sc_res = pmap(sim -> print_number_of_small_clusters(sim, p=0.005),
+              cdd.MCMC.ProgressBar(sims))
 
 # DIC
 println("Compute DIC sequentially...")

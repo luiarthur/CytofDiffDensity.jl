@@ -32,7 +32,7 @@ println("Post process ...")
 @time pp_res = pmap(postprocess, sims, on_error=identity)
 
 # Print number of small clusters
-@time nc_res = pmap(sim -> print_number_of_small_clusters(sim, p=0.02),
+@time nc_res = pmap(sim -> print_number_of_small_clusters(sim, p=0.005),
                     cdd.MCMC.ProgressBar(sims), on_error=identity)
 
 # Combine results, plot DIC.
