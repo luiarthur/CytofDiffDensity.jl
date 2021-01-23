@@ -54,11 +54,11 @@ println("Test OrderedNormalMeanPrior")
     @test isapprox(getfield.(mm.components, :loc), mean(getindex.(chain, :mu)), atol=0.1)
     @test isapprox(getfield.(mm.components, :scale), mean(getindex.(chain, :sigma)), atol=0.1)
     @test let
-      # Test that the 95% CI contains truth.
+      # Test that the 99% CI contains truth.
       nu_post = hcat(getindex.(chain, :nu)...)
       nu_true = getfield.(mm.components, :df)
-      nu_lower = vec(MCMC.quantiles(nu_post, .025, dims=2))
-      nu_upper = vec(MCMC.quantiles(nu_post, .975, dims=2))
+      nu_lower = vec(MCMC.quantiles(nu_post, .005, dims=2))
+      nu_upper = vec(MCMC.quantiles(nu_post, .995, dims=2))
       all(nu_lower .< nu_true .< nu_upper)
     end
     @test isapprox(getfield.(mm.components, :skew), mean(getindex.(chain, :phi)), atol=4)

@@ -25,6 +25,6 @@
     @test isapprox(st.loc, mean(getindex.(chain, :mu))[1], atol=0.1)
     @test isapprox(st.scale, mean(getindex.(chain, :sigma))[1], atol=0.1)
     @test isapprox(st.df, mean(getindex.(chain, :nu))[1], atol=2)
-    @test isapprox(st.skew, mean(getindex.(chain, :phi))[1], atol=2)
+    @test isapprox(st.skew, mean(getindex.(chain, :phi))[1], atol=3)
   end
 end
