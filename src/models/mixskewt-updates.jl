@@ -1,5 +1,5 @@
 function update_eta(m::MixSkewT, s::S) where S
-  anew = copy(m.eta.alpha)
+  anew = copy(collect(m.eta.alpha))
   foreach(lam -> anew[lam] +=1, s.lambda)
   return rand(Dirichlet(anew))
 end

@@ -3,7 +3,7 @@ function grab(from::T, p::Symbol, sample_idx::Symbol) where T
 end
 
 function update_etaC(m::Gtilde, s::T) where T
-  anew = copy(m.eta.alpha)
+  anew = copy(collect(m.eta.alpha))
 
   foreach(lam -> anew[lam] +=1, s.lambdaC)
   m.beta || foreach(lam -> anew[lam] +=1, s.lambdaT)
@@ -13,7 +13,7 @@ end
 
 function update_etaT(m::Gtilde, s::T) where T
   if m.beta
-    anew = copy(m.eta.alpha)
+    anew = copy(collect(m.eta.alpha))
     foreach(lam -> anew[lam] +=1, s.lambdaT)
     return rand(Dirichlet(anew))
   else
