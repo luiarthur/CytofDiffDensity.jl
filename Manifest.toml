@@ -31,9 +31,9 @@ version = "3.5.0+3"
 
 [[ArrayInterface]]
 deps = ["LinearAlgebra", "Requires", "SparseArrays"]
-git-tree-sha1 = "91f95e873f0e53d8f5e6603516fa8ec3dc312859"
+git-tree-sha1 = "a2a1884863704e0414f6f164a1f6f4a2a62faf4e"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "2.14.14"
+version = "2.14.17"
 
 [[Artifacts]]
 deps = ["Pkg"]
@@ -537,11 +537,11 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[MCMC]]
 deps = ["BangBang", "Bijectors", "Distributions", "LinearAlgebra", "ProgressBars", "Random", "StatsFuns"]
-git-tree-sha1 = "7abd831a582c398266761502a07fde4d200d1dd4"
+git-tree-sha1 = "c687362094e249aa2882805fb4d52c0f820e2a9a"
 repo-rev = "main"
 repo-url = "https://github.com/luiarthur/MCMC.jl"
 uuid = "c4263776-7399-408b-84de-0a68bf597892"
-version = "0.8.4"
+version = "0.8.5"
 
 [[MKL_jll]]
 deps = ["IntelOpenMP_jll", "Libdl", "Pkg"]

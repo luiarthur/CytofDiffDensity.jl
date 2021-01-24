@@ -141,6 +141,16 @@ function _postprocess(sim, resultsdir)
   begin
     pzero = Pzero(NC=r.simdata.NC, NT=r.simdata.NT,
                   QC=r.simdata.QC, QT=r.simdata.QT)
+
+    # TODO: Print hellinger distance
+    H = cdd.hellinger(r.chain, pzero, 10000)
+    H_mean = mean(H)
+    H_lower = quantile(H, .025)
+    H_upper = quantile(H, .975)
+    println("H mean: ", H_mean)
+    println("H lower: ", H_lower)
+    println("H upper: ", H_upper)
+
     pzero_inference = cdd.infer_Pzero1(pzero, 10000)
     gammaC_post = pzero_inference.distC
     gammaT_post = pzero_inference.distT

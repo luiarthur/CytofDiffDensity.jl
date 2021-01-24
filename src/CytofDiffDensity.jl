@@ -18,7 +18,9 @@ export make_sampler, print_model_info, make_ordered_prior
 export find_good_seed, make_callback
 export loglike, simulate_gtilde, simulate_ftilde
 export count_small_clusters
+export HurdleModel, hellinger
 
+include("hurdle.jl")
 include("util.jl")
 include("OrderedNormalMeanPrior.jl")
 include("skewt.jl")

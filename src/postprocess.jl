@@ -147,3 +147,28 @@ function count_small_clusters(chain::AbstractVector; p::Real=0.01)
   nsmall_clust = map(eta -> sum(eta .< p), etaC + etaT)
   return mean(nsmall_clust)
 end
+
+function hellinger(chain::AbstractVector, pzero::Pzero, nsamps::Integer)
+  B = length(chain)
+  gamma_post = infer_Pzero1(pzero, 1)
+
+  function hell(c)
+    gammaC = rand(gamma_post.distC)
+    gammaT = rand(gamma_post.distT)
+    st = SkewT.(c.mu, c.sigma, c.nu, c.phi)
+    GC = MixtureModel(st, c.etaC)
+    GT = MixtureModel(st, c.etaT)
+    FC = HurdleModel(-Inf, GC, gammaC)
+    FT = HurdleModel(-Inf, GT, gammaT)
+    H2 = MCMC.hellinger2(FC, FT, nsamps)
+    _nsamps = nsamps
+    while H2 < 0 
+      _nsamps *= 10
+      println("WARNING: H2 < 0. So resampling with nsamps=$(_nsamps).")
+      H2 = MCMC.hellinger2(FC, FT, _nsamps)
+    end
+    return sqrt(H2)
+  end
+
+  return map(hell, MCMC.ProgressBars.ProgressBar(chain))
+end

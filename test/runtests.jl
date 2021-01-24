@@ -7,6 +7,7 @@ using StatsFuns
 import Random
 
 @testset "MCMC" begin
+  include("hurdle.jl")
   include("simulate.jl")
   include("skewt.jl")
   include("mixskewt-model.jl")

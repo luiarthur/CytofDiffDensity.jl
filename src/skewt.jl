@@ -8,18 +8,26 @@ end
 
 
 function skewtlogpdf(loc::Real, scale::Real, df::Real, skew::Real, x::Real)
-  z = (x - loc) / scale
-  u = skew * z * sqrt((df + 1) / (df + z ^ 2))
-  kernel = tdistlogpdf(df, z) + tdistlogcdf(df + 1, u)
-  return kernel + logtwo - log(scale)
+  if isinf(x)
+    return -Inf
+  else
+    z = (x - loc) / scale
+    u = skew * z * sqrt((df + 1) / (df + z ^ 2))
+    kernel = tdistlogpdf(df, z) + tdistlogcdf(df + 1, u)
+    return kernel + logtwo - log(scale)
+  end
 end
 
 
 function skewtpdf(loc::Real, scale::Real, df::Real, skew::Real, x::Real)
-  z = (x - loc) / scale
-  u = skew * z * sqrt((df + 1) / (df + z ^ 2))
-  kernel = tdistpdf(df, z) * tdistcdf(df + 1, u)
-  return kernel * 2 / scale
+  if isinf(x)
+    return 0.0
+  else
+    z = (x - loc) / scale
+    u = skew * z * sqrt((df + 1) / (df + z ^ 2))
+    kernel = tdistpdf(df, z) * tdistcdf(df + 1, u)
+    return kernel * 2 / scale
+  end
 end
 
 

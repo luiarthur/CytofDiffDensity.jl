@@ -3,8 +3,12 @@
 
   # NOTE: With Ni of 10000, should have around 10 it/s without loglike computation.
   # NOTE: With Ni of 1000, should have around > 100 it/s without loglike computation.
-  yC = rand(SkewT(1, .6, 9, -5), 1000)
-  yT = rand(SkewT(3, 1, 9, -10), 1000)
+  NC = 1100
+  NT = 1150
+  QC = 100
+  QT = 150
+  yC = rand(SkewT(1, .6, 9, -5), NC - QC)
+  yT = rand(SkewT(3, 1, 9, -10), NT - QT)
   K = 5
   onm_prior = OrderedNormalMeanPrior(K, Normal(0, 6), truncated(Normal(1, .3), 0, Inf))
 
@@ -28,6 +32,17 @@
       @test length(metrics[:loglike]) == nsamps
       @assert length(unique(chain)) == nsamps
       cdd.printsummary(chain, metrics)
+
+      # Hellinger
+      if beta == 1 || beta == 0
+        @test let 
+          pzero = Pzero(NC=NC, NT=NT, QC=QC, QT=QT)
+          H = cdd.hellinger(chain, pzero, 5000)
+          H_mean = mean(H)
+          println("H: ", H_mean)
+          0 < H_mean < 1
+        end
+      end
 
       # NOTE: This is just to check that the samples are updated every iteration.
       # Note that as discrete parameters (`lambda_i`) are present, the number of
