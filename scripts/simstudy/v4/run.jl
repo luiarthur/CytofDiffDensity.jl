@@ -24,12 +24,12 @@ foreach(z -> println("$(z[1]) => $(z[2])"), zip(sims, res))
 
 # Post process
 println("Post process in parallel...")
-pp_res = pmap(postprocess, sims)
+pp_res = pmap(postprocess, cdd.MCMC.ProgressBar(sims))
 # postprocess(Dict(:beta=>1, :K=>5, :snum=>1))
 
 # Print number of small clusters
 sc_res = pmap(sim -> print_number_of_small_clusters(sim, p=0.005),
-              cdd.MCMC.ProgressBar(sims))
+              cdd.MCMC.ProgressBar(sims), on_error=identity)
 
 # DIC
 println("Compute DIC sequentially...")

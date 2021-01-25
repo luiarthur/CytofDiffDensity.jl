@@ -148,7 +148,8 @@ function count_small_clusters(chain::AbstractVector; p::Real=0.01)
   return mean(nsmall_clust)
 end
 
-function hellinger(chain::AbstractVector, pzero::Pzero, nsamps::Integer)
+function hellinger(chain::AbstractVector, pzero::Pzero, nsamps::Integer;
+                   verbose::Int=2)
   B = length(chain)
   gamma_post = infer_Pzero1(pzero, 1)
 
@@ -161,14 +162,14 @@ function hellinger(chain::AbstractVector, pzero::Pzero, nsamps::Integer)
     FC = HurdleModel(-Inf, GC, gammaC)
     FT = HurdleModel(-Inf, GT, gammaT)
     H2 = MCMC.hellinger2(FC, FT, nsamps)
-    _nsamps = nsamps
-    while H2 < 0 
-      _nsamps *= 10
-      println("WARNING: H2 < 0. So resampling with nsamps=$(_nsamps).")
-      H2 = MCMC.hellinger2(FC, FT, _nsamps)
+    if !(0 < H2 < 1)
+      verbose >= 2 && println("WARNING: H2 = $(H2). Clamping to be in [0, 1].")
+      H2 = clamp(H2, 0, 1)
     end
+    verbose >= 1 && flush(stdout)
     return sqrt(H2)
   end
 
-  return map(hell, MCMC.ProgressBars.ProgressBar(chain))
+  iters = verbose >= 1 ? MCMC.ProgressBars.ProgressBar(chain) : chain
+  return map(hell, iters)
 end
