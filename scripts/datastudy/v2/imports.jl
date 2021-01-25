@@ -176,7 +176,7 @@ function _postprocess(sim, resultsdir)
                   QC=r.data.QC, QT=r.data.QT)
 
     # TODO: Print hellinger distance
-    H = cdd.hellinger(r.chain, pzero, 10000, verbose=0)
+    H = cdd.hellinger(r.chain, pzero, 1000, verbose=0)
     H_mean = mean(H)
     H_lower = quantile(H, .025)
     H_upper = quantile(H, .975)

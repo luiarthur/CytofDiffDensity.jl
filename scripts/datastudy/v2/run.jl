@@ -29,7 +29,7 @@ foreach(z -> println("$(z[1]) => $(z[2])"), zip(sims, res))
 
 # Post process
 println("Post process ...")
-@time pp_res = pmap(postprocess, sims, on_error=identity)
+@time pp_res = pmap(postprocess, cdd.MCMC.ProgressBar(sims), on_error=identity)
 
 # Print number of small clusters
 @time nc_res = pmap(sim -> print_number_of_small_clusters(sim, p=0.005),
