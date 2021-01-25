@@ -489,7 +489,7 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[MCMC]]
 deps = ["BangBang", "Bijectors", "Distributions", "LinearAlgebra", "ProgressBars", "Random", "StatsFuns"]
-git-tree-sha1 = "511318da79b012aefc7932296a2bf40f473e3307"
+git-tree-sha1 = "c687362094e249aa2882805fb4d52c0f820e2a9a"
 repo-rev = "main"
 repo-url = "https://github.com/luiarthur/MCMC.jl"
 uuid = "c4263776-7399-408b-84de-0a68bf597892"
