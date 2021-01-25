@@ -96,6 +96,9 @@ function plot_simtruth_with_post(true_dist, chain, ygrid; alpha=0.3)
   post_dens = hcat(compute_post_density(chain, ygrid)...)
   pdf_lower = vec(MCMC.quantiles(post_dens, 0.025, dims=2))
   pdf_upper = vec(MCMC.quantiles(post_dens, 0.975, dims=2))
+  pdf_mean = vec(mean(post_dens, dims=2))
+
+  plot!(ygrid, pdf_mean, color=:blue, label=nothing, ls=:dot)
 
   plot!(ygrid, pdf_lower, fillrange=pdf_upper, alpha=alpha, color=:blue,
         label=nothing)
