@@ -57,8 +57,12 @@ println("Test OrderedNormalMeanPrior")
       # Test that the 99% CI contains truth.
       nu_post = hcat(getindex.(chain, :nu)...)
       nu_true = getfield.(mm.components, :df)
-      nu_lower = vec(MCMC.quantiles(nu_post, .005, dims=2))
-      nu_upper = vec(MCMC.quantiles(nu_post, .995, dims=2))
+      # nu_lower = vec(MCMC.quantiles(nu_post, .005, dims=2))
+      # nu_upper = vec(MCMC.quantiles(nu_post, .995, dims=2))
+      nu_sd = vec(std(nu_post, dims=2))
+      nu_mean = vec(mean(nu_post, dims=2))
+      nu_lower = nu_mean - 3 * nu_sd
+      nu_upper = nu_mean + 3 * nu_sd
       all(nu_lower .< nu_true .< nu_upper)
     end
     @test isapprox(getfield.(mm.components, :skew), mean(getindex.(chain, :phi)), atol=4)
